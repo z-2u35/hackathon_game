@@ -1,0 +1,117 @@
+/* Pixel font LNTH Twisty Pixel Việt hóa */
+@font-face {
+  font-family: 'TwistyPixelVN';
+  src: url('/fonts/0307-LNTH-TwistyPixel.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tailwind */
+@import "tailwindcss";
+
+/* Light theme */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* Tailwind theme variables */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* OS dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ffffff;
+  }
+}
+
+/* Base */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* -------------------------------------------------- */
+/* Pixel utilities */
+/* -------------------------------------------------- */
+
+.pixelated {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Chuyển sang LNTH Twisty Pixel Việt hóa */
+.pixel-text {
+  font-family: 'TwistyPixelVN', monospace;
+  letter-spacing: 0.04em;
+}
+
+.pixel-btn {
+  border: 2px solid #627086; /* slate */
+  padding: .5rem .9rem;
+  display: inline-block;
+  position: relative;
+  user-select: none;
+}
+
+.pixel-border {
+  box-shadow: inset 0 0 0 2px rgba(98,112,134,0.08);
+}
+
+.pixel-overlay {
+  mix-blend-mode: screen;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+/* Tiny glitch */
+.glitch {
+  display: inline-block;
+  transition: transform .12s ease;
+}
+.glitch:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .pixel-btn {
+    padding: .4rem .7rem;
+    font-size: 11px;
+  }
+}
+/* Custom Login Button Style */
+.custom-connect-wrapper button {
+  background-color: #D4A94E !important; 
+  color: #000 !important;
+  font-family: var(--font-pixel) !important; 
+  font-weight: bold !important;
+  border: 2px solid #FFD700 !important;
+  border-radius: 4px !important;
+  padding: 16px 24px !important;
+  font-size: 14px !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 0 #b45309 !important; /* Hiệu ứng nút nổi 3D */
+  transition: all 0.1s ease-in-out;
+}
+
+.custom-connect-wrapper button:hover {
+  background-color: #fbbf24 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #b45309 !important;
+}
+
+.custom-connect-wrapper button:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #b45309 !important;
+}
