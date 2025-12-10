@@ -13,7 +13,7 @@ const PixelNavbarBackground = dynamic(
 
 export default function PublicNavbar() {
   return (
-    <header className="relative w-full z-30 ml-5">
+    <header className="relative w-full z-30 m-2 ml-6 ">
       <PixelNavbarBackground />
 
       <Disclosure as="nav" className="relative z-10 bg-transparent">
@@ -37,7 +37,7 @@ export default function PublicNavbar() {
                 </div>
 
                 {/* Desktop menu */}
-                <div className="hidden md:flex items-center gap-6 border-2 border-white rounded-2xl p-1.5 m-1">
+                <div className="hidden md:flex items-center gap-6 border-2 border-white rounded-2xl p-1 m-2">
                   <div className="flex items-center gap-3 bg-[#1E2130]/50 backdrop-blur-md rounded-3xl px-4">
                     {navItems.map((it) => (
                       <Link

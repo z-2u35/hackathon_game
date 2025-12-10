@@ -7,7 +7,7 @@ import UserFooter from "./footer/UserFooter";
 
 export default function UserSetup({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative min-h-screen flex flex-col text-[#E9ECF2] bg-black overflow-x-hidden">
+    <div className="relative min-h-screen font-pixel flex flex-col text-[#E9ECF2] bg-black overflow-x-hidden">
       {/* Navbar */}
       <UserNavbarContainer>
         <UserNavbar />

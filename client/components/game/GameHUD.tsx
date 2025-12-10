@@ -4,6 +4,19 @@ import { useMemo } from "react";
 import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "@/app/providers/networkConfig";
 
+// Định nghĩa kiểu MoveObject cơ bản
+interface MoveObject {
+  data: {
+    objectId: string;
+    // thêm các field nếu cần
+  };
+}
+
+// Kiểu dữ liệu query
+interface LanternQueryData {
+  objects: MoveObject[];
+}
+
 export default function GameHUD() {
   const account = useCurrentAccount();
   const packageId = useNetworkVariable("packageId");
@@ -12,50 +25,49 @@ export default function GameHUD() {
   const { data, isLoading, isError } = useSuiClientQuery(
     "getOwnedObjects",
     {
-      // use the address field as expected by the wrapper
-      address: account?.address ?? null,
+      owner: account?.address ?? "", // dùng owner thay vì address
       limit: 20,
-      // GraphQL / RPC filter for struct type
       filter: { StructType: `${packageId}::lantern::Lantern` },
     },
     { enabled: !!account?.address }
   );
 
+  // Lấy danh sách lantern objects an toàn, tránh any
   const lanternObjects = useMemo(() => {
-    // data may be undefined while loading
-    // shape: { objects: MoveObject[] }
-    // fall back to empty array
-    return (data && (data as any).objects) || [];
+    if (!data || typeof data !== "object" || !("objects" in data)) return [];
+    return (data as LanternQueryData).objects ?? [];
   }, [data]);
 
-  if (!account) return null; // not connected
+  if (!account) return null; // chưa kết nối ví
 
   if (isLoading) {
     return (
-      <div className="w-full text-center text-zinc-400">Đang kiểm tra ví...</div>
+      <div className="w-full text-center text-zinc-400 font-pixel">
+        Đang kiểm tra ví...
+      </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="w-full text-center text-red-400">Lỗi khi đọc dữ liệu Blockchain.</div>
+      <div className="w-full text-center text-red-400 font-pixel">
+        Lỗi khi đọc dữ liệu Blockchain.
+      </div>
     );
   }
 
   const hasLantern = lanternObjects.length > 0;
 
-  // For this simple HUD we show live presence of a Lantern and the initial/default values
-  // defined in the Move contract. Parsing BCS into fields is left as a future enhancement.
   const MAX_OIL = 100;
   const MAX_SANITY = 100;
 
   if (!hasLantern) {
-    return null; // no lantern yet — parent page will render mint button
+    return null; // chưa mint lantern
   }
 
   return (
-    <div className="w-full max-w-sm bg-zinc-900/70 border border-zinc-800 p-6 rounded-md text-left">
-      <h3 className="font-pixel text-xl text-amber-300 mb-3">TRẠNG THÁI NHÂN VẬT</h3>
+    <div className="w-full max-w-sm bg-zinc-900/70 border border-zinc-800 p-6 rounded-md text-left font-pixel **:font-pixel">
+      <h3 className="text-xl text-amber-300 mb-3">TRẠNG THÁI NHÂN VẬT</h3>
 
       <div className="flex flex-col gap-2 text-sm text-zinc-200">
         <div className="flex justify-between">
