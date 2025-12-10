@@ -1,0 +1,16 @@
+# Sui Move build artifacts
+build/
+Move.lock
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test and trace files
+traces/
+.trace
+.coverage*

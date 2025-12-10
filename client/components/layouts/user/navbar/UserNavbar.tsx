@@ -3,15 +3,28 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Disclosure } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { navItems } from "./NavItems";
+import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit"; 
+import { useRouter } from "next/navigation";
 
 const PixelNavbarBackground = dynamic(
-  () => import("../background/PixelNavbarBackground"),
+  () => import("../background/PixelUserNavBackground"),
   { ssr: false }
 );
 
-export default function PublicNavbar() {
+export default function UserNavbar() {
+  const account = useCurrentAccount();
+  const { mutate: disconnect } = useDisconnectWallet();
+  const router = useRouter();
+
+  if (!account) return null; // fallback nếu chưa đăng nhập
+
+  const handleLogout = () => {
+    disconnect();      // Ngắt kết nối ví
+    router.push("/");   // Redirect về trang chủ
+  };
+
   return (
     <header className="relative w-full z-30 ml-5">
       <PixelNavbarBackground />
@@ -50,12 +63,19 @@ export default function PublicNavbar() {
                     ))}
                   </div>
 
-                  <Link
-                    href="/auth"
-                    className="pixel-text bg-[#D4A94E] m-3 text-black font-bold px-6 py-2 rounded-sm border-2 border-[#FFD700] shadow-md hover:shadow-lg hover:bg-[#FFD700] hover:-translate-y-1 transition-all duration-200 text-[25px] inline-block"
-                  >
-                    Login
-                  </Link>
+                  {/* Wallet info + logout */}
+                  <div className="flex items-center gap-2 m-2">
+                    <div className="pixel-text bg-[#1E2130] text-[#50fa7b] font-bold px-4 py-2 rounded-sm border-2 border-[#50fa7b] shadow-md select-none text-[20px]">
+                      {account.address.slice(0, 5)}...{account.address.slice(-4)}
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="bg-[#FF5555] hover:bg-[#ff0000] text-white border-2 border-[#990000] p-2 rounded-sm shadow-md active:translate-y-1 transition-all"
+                      title="Đăng xuất"
+                    >
+                      <ArrowRightOnRectangleIcon className="w-7 h-7" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Mobile toggle */}
@@ -86,13 +106,17 @@ export default function PublicNavbar() {
                   </Disclosure.Button>
                 ))}
 
-                <Disclosure.Button
-                  as={Link}
-                  href="/auth"
-                  className="pixel-text block w-full text-center bg-[#D4A94E] text-black rounded-xl px-4 py-3 font-bold shadow-md hover:shadow-lg transition-all duration-200 text-[25px]"
-                >
-                  Login
-                </Disclosure.Button>
+                <div className="space-y-3 pt-2 border-t border-zinc-600">
+                  <div className="pixel-text block w-full text-center bg-[#1E2130] text-[#50fa7b] border border-[#50fa7b] rounded-xl px-4 py-3 font-bold text-[20px]">
+                    Ví: {account.address.slice(0, 5)}...
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="pixel-text w-full text-center bg-[#FF5555] active:bg-[#ff0000] text-white border-2 border-[#990000] rounded-xl px-4 py-3 font-bold shadow-md text-[20px]"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
               </div>
             </Disclosure.Panel>
           </>

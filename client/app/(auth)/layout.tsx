@@ -1,16 +1,17 @@
-import PublicSetup from "@/components/layouts/public/PublicSetup";
+
 import PublicGuard from "../providers/publicGuard";
+import AuthSetup from "@/components/layouts/auth/AuthSetup";
 
 // File này KHÔNG ĐƯỢC chứa <html> hay <body>
 // Nó chỉ được bọc nội dung thôi
-export default function PublicLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <PublicGuard>
-      <PublicSetup>{children}</PublicSetup>
+      <AuthSetup>{children}</AuthSetup>
     </PublicGuard>
   );
 }

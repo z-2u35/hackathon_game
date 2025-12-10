@@ -4,7 +4,7 @@
 import { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 
-export default function PixelUserFooterBackground() {
+export default function PixelUserNavBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
 
@@ -20,7 +20,7 @@ export default function PixelUserFooterBackground() {
     appRef.current = app;
     containerRef.current.appendChild(app.view as any);
 
-    // Pixel filter
+    // Pixel shader
     const pixelFragment = `
       precision mediump float;
       varying vec2 vTextureCoord;
@@ -33,39 +33,40 @@ export default function PixelUserFooterBackground() {
         gl_FragColor = texture2D(uSampler, coord);
       }
     `;
+
     const pixelFilter = new PIXI.Filter(undefined, pixelFragment, {
-      pixelSize: 35.0,
+      pixelSize: 40.0,
     });
 
-    // Crystal shards
-    const crystals: PIXI.Graphics[] = [];
-    const colors = [0xffd86f, 0xffb347, 0xffa500]; // amber tones
+    // Create fire particles
+    const fires: PIXI.Graphics[] = [];
+    const colors = [0xff9f0f, 0xffd60a, 0xff6f00]; // amber tones
 
-    for (let i = 0; i < 60; i++) {
-      const c = new PIXI.Graphics();
+    for (let i = 0; i < 50; i++) {
+      const fire = new PIXI.Graphics();
       const color = colors[Math.floor(Math.random() * colors.length)];
-      c.beginFill(color);
-      c.drawRect(0, 0, 4, 4); // crystal pixel
-      c.endFill();
+      fire.beginFill(color);
+      fire.drawRect(0, 0, 4, 4);
+      fire.endFill();
 
-      c.x = Math.random() * app.renderer.width;
-      c.y = Math.random() * app.renderer.height;
-      c.filters = [pixelFilter];
+      fire.x = Math.random() * app.renderer.width;
+      fire.y = Math.random() * app.renderer.height;
 
-      crystals.push(c);
-      app.stage.addChild(c);
+      fire.filters = [pixelFilter];
+
+      fires.push(fire);
+      app.stage.addChild(fire);
     }
 
-    // Animation: floating/flickering crystals
+    // Animation: rising flames with slight horizontal flicker
     app.ticker.add(() => {
-      crystals.forEach((c) => {
-        c.y -= 0.2 + Math.random() * 0.3; // float upwards slowly
-        c.x += Math.sin(c.y * 0.05) * 0.2; // gentle horizontal sway
-        c.alpha = 0.5 + Math.random() * 0.5; // flicker
+      fires.forEach((fire) => {
+        fire.y -= 0.6 + Math.random() * 0.4; // move up
+        fire.x += Math.sin(fire.y * 0.05) * 0.5; // flicker side to side
 
-        if (c.y < -5) {
-          c.y = app.renderer.height + 5;
-          c.x = Math.random() * app.renderer.width;
+        if (fire.y < -10) {
+          fire.y = app.renderer.height + 10;
+          fire.x = Math.random() * app.renderer.width;
         }
       });
     });
@@ -78,7 +79,7 @@ export default function PixelUserFooterBackground() {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 pointer-events-none z-0"
+      className="absolute inset-0 pointer-events-none"
     />
   );
 }

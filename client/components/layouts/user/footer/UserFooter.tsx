@@ -4,29 +4,31 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Disclosure } from "@headlessui/react";
 
-const PixelFooterBackground = dynamic(
-  () => import("../background/PixelFooterBackground"),
+const PixelUserFooterBackground = dynamic(
+  () => import("../background/PixelUserNavBackground"),
   { ssr: false }
 );
 
 import { FootItems } from "./FootItems";
 
-export default function PublicFooter() {
+export default function UserFooter() {
   return (
-    <footer className="relative w-full z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
-      <PixelFooterBackground />
+    <footer className="relative w-full z-10 bg-[#1E1400] border-t-2 border-amber-500">
+      <PixelUserFooterBackground />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+
         {/* Footer links mapping theo section */}
-        <div className="flex flex-col md:flex-row gap-5 md:gap-12 w-full">
+        <div className="flex flex-col md:flex-row gap-5 md:gap-12 w-full md:w-auto">
           {FootItems.map((section) => (
             <Disclosure key={section.title} defaultOpen>
               {({ open }) => (
                 <div className="flex flex-col w-full md:flex-1 gap-2">
-                  <Disclosure.Button className="pixel-text text-[#C7B4FF] text-[22px] font-bold flex justify-between md:justify-center w-full md:w-auto px-2 py-1 border-b md:border-none border-zinc-600 hover:text-amber-400 transition-all">
+                  <Disclosure.Button className="pixel-text text-amber-400 text-[22px] font-bold flex justify-between md:justify-center w-full md:w-auto px-2 py-1 border-b md:border-none border-zinc-600 hover:text-amber-300 transition-all">
                     {section.title}
                     <span className="md:hidden">{open ? "▲" : "▼"}</span>
                   </Disclosure.Button>
+
                   <Disclosure.Panel
                     className={`flex flex-wrap gap-2 md:gap-2 mt-1 md:mt-0 justify-center transition-all duration-200 ${
                       open ? "flex" : "hidden md:flex"
@@ -36,7 +38,7 @@ export default function PublicFooter() {
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="pixel-text text-center border-2 border-white bg-[#26293A] rounded-2xl px-3 py-1 hover:bg-[#C7B4FF]/20 hover:shadow-lg transition-all duration-200 text-[#F0F2FA] text-[20px]"
+                        className="pixel-text text-center border-2 border-amber-500 bg-[#2E1B00] rounded-2xl px-3 py-1 hover:bg-amber-500/20 hover:shadow-lg transition-all duration-200 text-amber-100 text-[20px]"
                       >
                         {item.label}
                       </Link>
@@ -48,7 +50,8 @@ export default function PublicFooter() {
           ))}
         </div>
 
-        <div className="pixel-text text-[#F0F2FA] text-[18px] mt-4 md:mt-0 text-center md:text-right">
+        {/* Copyright */}
+        <div className="pixel-text text-amber-100 text-[18px] mt-4 md:mt-0 text-center md:text-right">
           © {new Date().getFullYear()} ASTEROS. All rights reserved.
         </div>
       </div>

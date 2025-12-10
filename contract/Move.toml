@@ -1,0 +1,13 @@
+[package]
+name = "lantern_protocol"
+edition = "2024.beta"
+version = "0.0.1"
+published-at = "0x0" # Để 0x0 khi deploy lần đầu
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+
+[addresses]
+lantern_protocol = "0x0" # Đặt là 0x0 để Sui tự sinh địa chỉ mới
+std =  "0x1"
+sui =  "0x2"
