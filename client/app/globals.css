@@ -53,7 +53,10 @@ body {
   font-family: 'TwistyPixelVN', monospace;
   letter-spacing: 0.04em;
 }
-
+.font-pixel {
+  font-family: 'TwistyPixelVN', monospace;
+  letter-spacing: 0.04em;
+}
 .pixel-btn {
   border: 2px solid #627086; /* slate */
   padding: .5rem .9rem;

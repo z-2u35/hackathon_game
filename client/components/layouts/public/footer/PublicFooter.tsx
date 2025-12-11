@@ -13,11 +13,10 @@ import { FootItems } from "./FootItems";
 
 export default function PublicFooter() {
   return (
-    <footer className="relative w-full z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
-      <PixelFooterBackground />
+    <footer className="relative w-full min-h-[200px] z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
+      <PixelFooterBackground className="absolute bottom-0 left-0 w-full h-10 pointer-events-none" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        {/* Footer links mapping theo section */}
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex flex-col md:flex-row gap-5 md:gap-12 w-full">
           {FootItems.map((section) => (
             <Disclosure key={section.title} defaultOpen>
@@ -27,6 +26,7 @@ export default function PublicFooter() {
                     {section.title}
                     <span className="md:hidden">{open ? "▲" : "▼"}</span>
                   </Disclosure.Button>
+
                   <Disclosure.Panel
                     className={`flex flex-wrap gap-2 md:gap-2 mt-1 md:mt-0 justify-center transition-all duration-200 ${
                       open ? "flex" : "hidden md:flex"

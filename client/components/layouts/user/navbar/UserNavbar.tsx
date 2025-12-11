@@ -41,12 +41,11 @@ export default function UserNavbar() {
                       A
                     </div>
                   </div>
-                  <Link
-                    href="/"
-                    className="pixel-text text-[#F0F2FA] text-[25px] font-bold tracking-wider hover:text-[#C7B4FF] transition-all"
+                  <div
+                    className="pixel-text text-[#F0F2FA] text-[35px] font-bold tracking-wider transition-all"
                   >
                     ASTEROS
-                  </Link>
+                  </div>
                 </div>
 
                 {/* Desktop menu */}

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import LoadBackground from "@/components/layouts/user/background/LoadBackground";
@@ -14,30 +13,15 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (account === undefined) return; // Đang load SDK
-
-    if (account === null) {
-      // Có wallet nhưng chưa connect → redirect
-      window.location.replace("/auth");
-      return;
+    if (account === undefined) return; // SDK đang load
+    if (account !== null) {
+      // Hoãn setState để tránh cảnh báo ESLint
+      const id = setTimeout(() => setInitialized(true), 0);
+      return () => clearTimeout(id);
     }
-
-    // Có account → đã login
-    setInitialized(true);
   }, [account]);
 
-  // account undefined → F5 hoặc SDK đang load → hiển thị nền load
-  if (account === undefined) {
-    return <LoadBackground />;
-  }
-
-  // account null nhưng redirect chưa chạy → tránh render trắng
-  if (account === null) {
-    return <LoadBackground />;
-  }
-
-  // account đã có nhưng chưa init logic → show background
-  if (!initialized) {
+  if (account === undefined || !initialized) {
     return <LoadBackground />;
   }
 

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { Disclosure } from "@headlessui/react";
 
 const PixelUserFooterBackground = dynamic(
-  () => import("../background/PixelUserNavBackground"),
+  () => import("../background/PixelUserFootBackground"),
   { ssr: false }
 );
 

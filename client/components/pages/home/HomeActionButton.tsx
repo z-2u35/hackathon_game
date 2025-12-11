@@ -3,7 +3,6 @@
 
 import { Disclosure } from "@headlessui/react";
 import Link from "next/link";
-import StartGameButton from "./StartGameButton";
 import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "@/app/providers/networkConfig";
 
@@ -41,11 +40,10 @@ export default function HomeActionButton() {
                 href="/auth"
                 className="font-pixel text-sm bg-[#D4A94E] text-black py-4 px-10 rounded border-b-4 border-[#b45309] hover:bg-[#fbbf24] active:translate-y-1 transition-all"
               >
-                LOGIN SYSTEM
+                LOGIN
               </Link>
             ) : !hasLantern ? (
               <>
-                <StartGameButton />
                 <button
                   onClick={() => refetch()}
                   className="mt-2 text-xs text-zinc-500 hover:text-white underline font-mono"

@@ -1,44 +1,19 @@
+// components/game/GameHUD.tsx
 "use client";
 
-import { useMemo } from "react";
-import { useCurrentAccount, useSuiClientQuery } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "@/app/providers/networkConfig";
-
-// Định nghĩa kiểu MoveObject cơ bản
-interface MoveObject {
-  data: {
-    objectId: string;
-    // thêm các field nếu cần
-  };
-}
-
-// Kiểu dữ liệu query
-interface LanternQueryData {
-  objects: MoveObject[];
-}
+import { usePlayerStats } from "@/hook/usePlayerStats";
 
 export default function GameHUD() {
-  const account = useCurrentAccount();
-  const packageId = useNetworkVariable("packageId");
+  const {
+    account,
+    isLoading,
+    isError,
+    hasLantern,
+    MAX_OIL,
+    MAX_SANITY,
+  } = usePlayerStats();
 
-  // Query owned objects filtered to Lantern struct type
-  const { data, isLoading, isError } = useSuiClientQuery(
-    "getOwnedObjects",
-    {
-      owner: account?.address ?? "", // dùng owner thay vì address
-      limit: 20,
-      filter: { StructType: `${packageId}::lantern::Lantern` },
-    },
-    { enabled: !!account?.address }
-  );
-
-  // Lấy danh sách lantern objects an toàn, tránh any
-  const lanternObjects = useMemo(() => {
-    if (!data || typeof data !== "object" || !("objects" in data)) return [];
-    return (data as LanternQueryData).objects ?? [];
-  }, [data]);
-
-  if (!account) return null; // chưa kết nối ví
+  if (!account) return null;
 
   if (isLoading) {
     return (
@@ -56,17 +31,10 @@ export default function GameHUD() {
     );
   }
 
-  const hasLantern = lanternObjects.length > 0;
-
-  const MAX_OIL = 100;
-  const MAX_SANITY = 100;
-
-  if (!hasLantern) {
-    return null; // chưa mint lantern
-  }
+  if (!hasLantern) return null;
 
   return (
-    <div className="w-full max-w-sm bg-zinc-900/70 border border-zinc-800 p-6 rounded-md text-left font-pixel **:font-pixel">
+    <div className="w-full max-w-sm bg-zinc-900/70 border border-zinc-800 p-6 rounded-md text-left font-pixel">
       <h3 className="text-xl text-amber-300 mb-3">TRẠNG THÁI NHÂN VẬT</h3>
 
       <div className="flex flex-col gap-2 text-sm text-zinc-200">

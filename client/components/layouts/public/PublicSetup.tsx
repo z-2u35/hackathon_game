@@ -11,7 +11,7 @@ export default function PublicSetup({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen text-[#E9ECF2] flex flex-col">
+    <div className="relative pixel-text min-h-screen text-[#E9ECF2] flex flex-col">
       {/* Navbar */}
       <PublicNavbarContainer>
         <PublicNavbar />
