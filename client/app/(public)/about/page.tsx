@@ -10,7 +10,7 @@ import EclipsedPit from "@/components/pages/about/AboutEclipsedPit";
 import LanternNature from "@/components/pages/about/AboutLanternNature";
 import TheSeeker from "@/components/pages/about/AboutTheSeeker";
 import JourneyGoal from "@/components/pages/about/AboutJourneyGoal";
-
+import AboutUs from "@/components/pages/about/AboutUs";
 type Star = {
   top: string;
   left: string;
@@ -50,13 +50,15 @@ export default function AboutPage() {
         <div
           key={i}
           className="absolute w-1 h-1 bg-white rounded-full animate-shootingStar"
-          style={{
-            top: star.top,
-            left: star.left,
-            animationDelay: star.delay,
-            '--tx': `${star.x}px`,
-            '--ty': `${star.y}px`,
-          } as never}
+          style={
+            {
+              top: star.top,
+              left: star.left,
+              animationDelay: star.delay,
+              "--tx": `${star.x}px`,
+              "--ty": `${star.y}px`,
+            } as never
+          }
         />
       ))}
 
@@ -91,6 +93,9 @@ export default function AboutPage() {
       {/* EclipsedPit full-width */}
       <div className="m-6 bg-zinc-800/80 p-6 rounded-2xl border border-amber-100/20 shadow-lg relative z-10">
         <EclipsedPit />
+      </div>
+      <div className="m-6 bg-zinc-800/80 p-6 rounded-2xl border border-amber-100/20 shadow-lg relative z-10">
+        <AboutUs />
       </div>
     </main>
   );

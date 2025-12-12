@@ -17,7 +17,7 @@ export default function PublicNavbar() {
       <PixelNavbarBackground />
 
       <Disclosure as="nav" className="relative z-10 bg-transparent">
-        {({ open }) => (
+         {({ open }: { open: boolean }) => (  
           <>
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <div className="flex h-20 items-center justify-between">

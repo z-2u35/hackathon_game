@@ -12,7 +12,7 @@ export default function HeroSection() {
     <section className="relative w-full h-screen flex flex-col items-center justify-center text-center px-4">
         <HeroContent/>
       <div className="absolute inset-0 z-0 ">
-        <div className="w-full h-full bg-[url('/images/hero-bg.png')] bg-cover bg-center opacity-50"></div>
+        <div className="w-full h-full bg-cover bg-center opacity-50"></div>
       </div>
 
       <div className="relative z-10 flex flex-col items-center gap-6 border-t-2 border-amber-200 p-2 mt-2">

@@ -1,5 +1,25 @@
-// FootItems.ts (Tiếng Việt)
-export const FootItems = [
+import { IconType } from "react-icons";
+import { FaFacebookF, FaInstagram, FaYoutube, FaGithub } from "react-icons/fa";
+
+type LogoItem = { type: "logo"; href: string; src: string };
+type IconItem = { type: "icon"; href: string; icon: IconType };
+type LinkItem = { label: string; href: string };
+export type FooterItem = LogoItem | IconItem | LinkItem;
+
+export const FootItemsExtended: {
+  title: string;
+  items: FooterItem[];
+}[] = [
+  {
+    title: "Logo & Social",
+    items: [
+      { type: "logo", href: "/", src: "/logo.png" },
+      { type: "icon", href: "https://facebook.com", icon: FaFacebookF },
+      { type: "icon", href: "https://instagram.com", icon: FaInstagram },
+      { type: "icon", href: "https://youtube.com", icon: FaYoutube },
+      { type: "icon", href: "https://github.com", icon: FaGithub },
+    ],
+  },
   {
     title: "Sản phẩm",
     items: [

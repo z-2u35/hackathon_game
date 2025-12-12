@@ -1,34 +1,58 @@
 "use client";
 
 import HomeActionButton from "./HomeActionButton";
+// Import HomeActionButton nếu nó nằm cùng cấp hoặc đúng đường dẫn
 
 export default function HeroContent() {
   return (
     <div className="z-10 text-center flex flex-col items-center gap-6 w-full px-4 py-12">
       <h1
-        className="relative text-5xl md:text-9xl font-pixel font-bold mb-2 tracking-tighter text-transparent
+        className={`
+          relative 
+          text-5xl md:text-9xl 
+          font-pixel font-bold 
+          mb-2 
+          tracking-tighter 
+          text-transparent
           bg-clip-text bg-linear-to-b from-amber-300 to-amber-700
-          animate-flicker animate-jitter animate-gradient-ghost"
+          animate-flicker animate-jitter animate-gradient-ghost
+        `}
       >
         ASTEROS
         {/* Glitch đỏ */}
-        <span className="absolute top-0 left-0 text-red-400 opacity-70 animate-glitch1
-          border-2 border-red-600 shadow-[0_0_10px_rgba(255,0,0,0.8)]">
+        <span 
+          className={`
+            absolute top-0 left-0 text-red-400 opacity-70 animate-glitch1
+            border-2 border-red-600 shadow-[0_0_10px_rgba(255,0,0,0.8)]
+          `}
+        >
           ASTEROS
         </span>
         {/* Glitch xanh dương */}
-        <span className="absolute top-0 left-0 text-blue-400 opacity-70 animate-glitch2
-          border-2 border-blue-600 shadow-[0_0_10px_rgba(0,0,255,0.8)]">
+        <span 
+          className={`
+            absolute top-0 left-0 text-blue-400 opacity-70 animate-glitch2
+            border-2 border-blue-600 shadow-[0_0_10px_rgba(0,0,255,0.8)]
+          `}
+        >
           ASTEROS
         </span>
         {/* Glitch tím */}
-        <span className="absolute top-0 left-0 text-purple-400 opacity-70 animate-glitch3
-          border-2 border-purple-600 shadow-[0_0_10px_rgba(128,0,128,0.8)]">
+        <span 
+          className={`
+            absolute top-0 left-0 text-purple-400 opacity-70 animate-glitch3
+            border-2 border-purple-600 shadow-[0_0_10px_rgba(128,0,128,0.8)]
+          `}
+        >
           ASTEROS
         </span>
         {/* Glitch xám-đen */}
-        <span className="absolute top-0 left-0 text-gray-800 opacity-80 animate-glitch4
-          border-2 border-gray-900 shadow-[0_0_15px_rgba(0,0,0,0.9)]">
+        <span 
+          className={`
+            absolute top-0 left-0 text-gray-800 opacity-80 animate-glitch4
+            border-2 border-gray-900 shadow-[0_0_15px_rgba(0,0,0,0.9)]
+          `}
+        >
           ASTEROS
         </span>
       </h1>
@@ -59,17 +83,17 @@ export default function HeroContent() {
 
         /* Gradient nhấp nháy màu vàng-cam-đỏ kinh dị */
         @keyframes gradient-ghost {
-       0%   { background-image: linear-gradient(to bottom, #ff9f00, #ff6f00); } /* retro cam */
-  10%  { background-image: linear-gradient(to bottom, #ff5722, #ff1744); } /* đỏ hồng */
-  20%  { background-image: linear-gradient(to bottom, #ff6f00, #ffc107); } /* cam vàng */
-  30%  { background-image: linear-gradient(to bottom, #ffd600, #ffea00); } /* vàng sáng */
-  40%  { background-image: linear-gradient(to bottom, #ff5722, #e91e63); } /* đỏ hồng tối */
-  50%  { background-image: linear-gradient(to bottom, #ffeb3b, #ff3d00); } /* vàng → đỏ cam */
-  60%  { background-image: linear-gradient(to bottom, #ffc107, #ff6f00); } /* vàng cam retro */
-  70%  { background-image: linear-gradient(to bottom, #9e9e9e, #616161); } /* xám sáng → xám đậm */
-  80%  { background-image: linear-gradient(to bottom, #757575, #424242); } /* xám trung → xám tối */
-  90%  { background-image: linear-gradient(to bottom, #b0bec5, #90a4ae); } /* xám lạnh */
-  100% { background-image: linear-gradient(to bottom, #9e9e9e, #616161); } /* xám retro */
+          0%   { background-image: linear-gradient(to bottom, #ff9f00, #ff6f00); } 
+          10%  { background-image: linear-gradient(to bottom, #ff5722, #ff1744); } 
+          20%  { background-image: linear-gradient(to bottom, #ff6f00, #ffc107); } 
+          30%  { background-image: linear-gradient(to bottom, #ffd600, #ffea00); } 
+          40%  { background-image: linear-gradient(to bottom, #ff5722, #e91e63); } 
+          50%  { background-image: linear-gradient(to bottom, #ffeb3b, #ff3d00); } 
+          60%  { background-image: linear-gradient(to bottom, #ffc107, #ff6f00); } 
+          70%  { background-image: linear-gradient(to bottom, #9e9e9e, #616161); } 
+          80%  { background-image: linear-gradient(to bottom, #757575, #424242); } 
+          90%  { background-image: linear-gradient(to bottom, #b0bec5, #90a4ae); } 
+          100% { background-image: linear-gradient(to bottom, #9e9e9e, #616161); } 
         }
         .animate-gradient-ghost {
           animation: gradient-ghost 3s infinite;
