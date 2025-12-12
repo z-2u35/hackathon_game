@@ -8,12 +8,14 @@ import "@mysten/dapp-kit/dist/index.css";
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const defaultNetwork =
+    (process.env.NEXT_PUBLIC_SUI_NETWORK as "devnet" | "testnet" | "mainnet") ||
+    "testnet";
+
   return (
     <QueryClientProvider client={queryClient}>
-      <SuiClientProvider networks={networkConfig} defaultNetwork="devnet">
-        <WalletProvider autoConnect>
-          {children}
-        </WalletProvider>
+      <SuiClientProvider networks={networkConfig} defaultNetwork={defaultNetwork}>
+        <WalletProvider autoConnect>{children}</WalletProvider>
       </SuiClientProvider>
     </QueryClientProvider>
   );

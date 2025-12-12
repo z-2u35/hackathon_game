@@ -14,6 +14,7 @@ interface SuiObjectResponse {
         hp?: number;
         sanity?: number;
         oil?: number;
+        is_alive?: boolean;
       };
     };
   };
@@ -33,6 +34,7 @@ export function usePlayerStats() {
       owner: account?.address ?? "",
       limit: 20,
       filter: { StructType: `${packageId}::lantern::Lantern` },
+      options: { showContent: true },
     },
     { enabled: !!account?.address }
   );
@@ -44,13 +46,12 @@ export function usePlayerStats() {
   }, [data]);
 
   const hasLantern = lanternObjects.length > 0;
-
   const lanternId = lanternObjects[0]?.data.objectId ?? null;
 
-  // Lấy thông số cơ bản nếu có content.fields
   const hp = lanternObjects[0]?.data.content?.fields?.hp ?? 100;
   const sanity = lanternObjects[0]?.data.content?.fields?.sanity ?? 100;
   const oil = lanternObjects[0]?.data.content?.fields?.oil ?? 100;
+  const isAlive = lanternObjects[0]?.data.content?.fields?.is_alive ?? true;
 
   const MAX_OIL = 100;
   const MAX_SANITY = 100;
@@ -65,6 +66,7 @@ export function usePlayerStats() {
     hp,
     sanity,
     oil,
+    isAlive,
     MAX_OIL,
     MAX_SANITY,
     refetch,
