@@ -1,16 +1,23 @@
-import PublicSetup from "@/components/layouts/public/PublicSetup";
+"use client";
+
+import React from "react";
+import dynamic from "next/dynamic";
 import PublicGuard from "../providers/publicGuard";
 
-// File này KHÔNG ĐƯỢC chứa <html> hay <body>
-// Nó chỉ được bọc nội dung thôi
-export default function PublicLayout({
-  children,
-}: {
+// Chỉ mount PublicSetup trên client, SSR bỏ qua
+const PublicSetupClient = dynamic(
+  () => import("@/components/layouts/public/PublicSetup"),
+  { ssr: false }
+);
+
+interface PublicLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function PublicLayout({ children }: PublicLayoutProps) {
   return (
     <PublicGuard>
-      <PublicSetup>{children}</PublicSetup>
+      <PublicSetupClient>{children}</PublicSetupClient>
     </PublicGuard>
   );
 }

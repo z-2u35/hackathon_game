@@ -42,6 +42,16 @@ module.exports = {
         102: "1.02",
         105: "1.05",
       },
+
+      keyframes: {
+        shootingStar: {
+          '0%': { transform: 'translate(0,0) scale(1)', opacity: '1' },
+          '100%': { transform: 'translate(var(--tx), var(--ty)) scale(0)', opacity: '0' },
+        },
+      },
+      animation: {
+        shootingStar: 'shootingStar 1.5s linear infinite',
+      },
     },
   },
   plugins: [],

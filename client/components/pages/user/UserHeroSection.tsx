@@ -1,6 +1,7 @@
 // components/user/UserHeroSection.tsx
 "use client";
 
+import Link from "next/link";
 import { usePlayerStats } from "@/hook/usePlayerStats"; // đúng folder: hooks, không phải hook
 
 export default function UserHeroSection() {
@@ -19,9 +20,12 @@ export default function UserHeroSection() {
       <h1 className="text-4xl text-amber-300 mb-2">Chào mừng trở lại, Seeker.</h1>
       <p className="text-zinc-200 text-lg">{subheading}</p>
       <div className="mt-4 flex justify-center gap-4">
-        <button className="bg-amber-400 text-zinc-900 px-4 py-2 rounded-md font-pixel hover:bg-amber-300">
+       <Link
+          href="/play"
+          className="bg-amber-400 text-zinc-900 px-4 py-2 rounded-md font-pixel hover:bg-amber-300"
+        >
           TIẾP TỤC RUN
-        </button>
+        </Link>
         <button className="bg-zinc-700 text-zinc-200 px-4 py-2 rounded-md font-pixel hover:bg-zinc-600">
           KHO NFT CỦA BẠN
         </button>

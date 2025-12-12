@@ -4,6 +4,7 @@
 import PublicNavbar from "@/components/layouts/public/navbar/PublicNavbar";
 import PublicNavbarContainer from "./navbar/PublicNavbarContainer";
 import PublicFooter from "@/components/layouts/public/footer/PublicFooter";
+import PublicBackground from "./background/PublicBackground";
 
 export default function PublicSetup({
   children,
@@ -16,9 +17,11 @@ export default function PublicSetup({
       <PublicNavbarContainer>
         <PublicNavbar />
       </PublicNavbarContainer>
-
+      
       {/* Main content */}
-      <main className="relative z-10 flex-1 ">{children}</main>
+      <main className="relative z-10 flex-1 ">
+        <PublicBackground>{children} </PublicBackground>
+      </main>
 
       {/* Footer */}
       <PublicFooter />

@@ -8,7 +8,7 @@ import CharacterSection from "@/components/pages/home/CharacterSection";
 import NewsSection from "@/components/pages/home/NewsSection";
 export default function Home() {
   return (
-    <main className="flex flex-col gap-0 bg-zinc-950 text-white pixel-text overflow-hidden relative">
+    <main className="flex flex-col gap-0 text-white pixel-text overflow-hidden relative">
       {/* Hero Section với background và title */}
       <HeroSection />
       {/* HomeActionButton (nút login/mint) */}\{/* Các section khác */}

@@ -118,3 +118,32 @@ body {
   transform: translateY(4px);
   box-shadow: 0 0 0 #b45309 !important;
 }
+
+@keyframes shootingStar {
+  0% {
+    transform: translate(0, 0) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(1);
+    opacity: 0;
+  }
+}
+
+.animate-shootingStar {
+  animation: shootingStar 1.5s linear infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes fireFlicker {
+  0% { transform: translate(0,0) scale(1); opacity: 0.8; }
+  50% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0.5; }
+  100% { transform: translate(0,0) scale(1); opacity: 0.8; }
+}
+
+.animate-fireFlicker {
+  animation: fireFlicker 2s ease-in-out infinite;
+}

@@ -16,13 +16,20 @@ export default function PublicFooter() {
     <footer className="relative w-full min-h-[200px] z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
       <PixelFooterBackground className="absolute bottom-0 left-0 w-full h-10 pointer-events-none" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex flex-col md:flex-row gap-5 md:gap-12 w-full">
           {FootItems.map((section) => (
             <Disclosure key={section.title} defaultOpen>
               {({ open }) => (
                 <div className="flex flex-col w-full md:flex-1 gap-2">
-                  <Disclosure.Button className="pixel-text text-[#C7B4FF] text-[22px] font-bold flex justify-between md:justify-center w-full md:w-auto px-2 py-1 border-b md:border-none border-zinc-600 hover:text-amber-400 transition-all">
+<Disclosure.Button
+  className="pixel-text text-red-100 text-[22px] font-bold flex justify-between md:justify-center w-full md:w-auto px-2 py-1 border-b md:border-none border-zinc-600
+             hover:text-white transition-all"
+  style={{
+    textShadow:
+      "2px 2px 0 #8b5e00, -2px -2px 0 #8b5e00, 2px -2px 0 #8b5e00, -2px 2px 0 #8b5e00",
+  }}
+>
                     {section.title}
                     <span className="md:hidden">{open ? "▲" : "▼"}</span>
                   </Disclosure.Button>
