@@ -11,7 +11,7 @@ const highlights = [
 export default function GameplaySection() {
   return (
     <section className="py-20 px-4 bg-zinc-800 text-zinc-100 text-center">
-      <h2 className="text-4xl font-pixel mb-6">Một Roguelike nơi mọi quyết định đều có cái giá</h2>
+      <h2 className="text-4xl font-pixel mb-6">Một Roguelike nơi mọi quyết định sẽ có con giá phải trả cá</h2>
       <div className="flex flex-col md:flex-row justify-center gap-6">
         {highlights.map((item, idx) => (
           <div key={idx} className="bg-zinc-900 p-6 rounded-lg shadow-lg max-w-sm">

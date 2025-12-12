@@ -30,9 +30,91 @@ export default function PublicNavbar() {
                   </div>
                   <Link
                     href="/"
-                    className="pixel-text text-[#F0F2FA] text-[25px] font-bold tracking-wider hover:text-[#C7B4FF] transition-all"
+                    className="relative inline-block text-[55px] font-bold font-pixel tracking-wider text-transparent hover:text-[#C7B4FF] transition-all"
                   >
                     ASTEROS
+                    {/* Base màu trắng sáng */}
+                    <span className="absolute top-0 left-0 w-full h-full text-[#F0F2FA] opacity-100">
+                      ASTEROS
+                    </span>
+                    {/* Glitch đỏ */}
+                    <span className="absolute top-0 left-0 w-full h-full text-red-400 opacity-70 animate-glitch-sm1">
+                      ASTEROS
+                    </span>
+                    {/* Glitch xanh */}
+                    <span className="absolute top-0 left-0 w-full h-full text-blue-400 opacity-70 animate-glitch-sm2">
+                      ASTEROS
+                    </span>
+                    {/* Glitch xám tối nhẹ */}
+                    <span className="absolute top-0 left-0 w-full h-full text-white opacity-80 animate-glitch-sm3">
+                      ASTEROS
+                    </span>
+                    <style jsx>{`
+                      @keyframes glitch-sm1 {
+                        0%,
+                        100% {
+                          transform: translate(0, 0);
+                        }
+                        20% {
+                          transform: translate(-1px, -1px);
+                        }
+                        40% {
+                          transform: translate(1px, 1px);
+                        }
+                        60% {
+                          transform: translate(-1px, 1px);
+                        }
+                        80% {
+                          transform: translate(1px, -1px);
+                        }
+                      }
+                      @keyframes glitch-sm2 {
+                        0%,
+                        100% {
+                          transform: translate(0, 0);
+                        }
+                        20% {
+                          transform: translate(1px, 1px);
+                        }
+                        40% {
+                          transform: translate(-1px, -1px);
+                        }
+                        60% {
+                          transform: translate(1px, -1px);
+                        }
+                        80% {
+                          transform: translate(-1px, 1px);
+                        }
+                      }
+                      @keyframes glitch-sm3 {
+                        0%,
+                        100% {
+                          transform: translate(0, 0);
+                        }
+                        20% {
+                          transform: translate(0, -1px);
+                        }
+                        40% {
+                          transform: translate(0, 1px);
+                        }
+                        60% {
+                          transform: translate(-1px, 0);
+                        }
+                        80% {
+                          transform: translate(1px, 0);
+                        }
+                      }
+
+                      .animate-glitch-sm1 {
+                        animation: glitch-sm1 1.5s infinite;
+                      }
+                      .animate-glitch-sm2 {
+                        animation: glitch-sm2 1.7s infinite;
+                      }
+                      .animate-glitch-sm3 {
+                        animation: glitch-sm3 2s infinite;
+                      }
+                    `}</style>
                   </Link>
                 </div>
 
