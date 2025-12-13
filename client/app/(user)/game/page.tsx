@@ -5,6 +5,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { usePlayerStats } from "@/hook/usePlayerStats";
 import MirrorHallwayGame from "@/components/game/MirrorHallwayGame";
 import GameHUD from "@/components/game/GameHUD";
+import GameBackground from "@/components/game/GameBackground";
 import Link from "next/link";
 
 export default function GamePage() {
@@ -56,14 +57,17 @@ export default function GamePage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white relative">
+    <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
+      {/* PixiJS Background với particles */}
+      <GameBackground intensity="high" />
+
       {/* Game HUD ở trên cùng */}
       <div className="absolute top-4 left-4 right-4 z-40 flex justify-center">
         <GameHUD />
       </div>
 
       {/* Canvas game ở giữa */}
-      <div className="w-full h-screen pt-24 pb-32">
+      <div className="w-full h-screen pt-24 pb-32 relative z-20">
         <MirrorHallwayGame onChoice={handleGameChoice} />
       </div>
 

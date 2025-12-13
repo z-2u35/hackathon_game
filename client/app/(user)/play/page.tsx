@@ -5,6 +5,7 @@ import { useState } from "react";
 import { usePlayerStats } from "@/hook/usePlayerStats";
 import GameHUD from "@/components/game/GameHUD";
 import GameActions from "@/components/game/GameActions";
+import GameBackground from "@/components/game/GameBackground";
 
 export default function PlayPage() {
   const { hasLantern, lanternObjects, oil, isAlive, refetch } = usePlayerStats();
@@ -17,24 +18,32 @@ export default function PlayPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 p-6 flex flex-col items-center gap-6">
-      <h1 className="text-3xl font-pixel text-amber-300 mb-4">Chơi</h1>
+    <main className="min-h-screen bg-zinc-950 p-6 flex flex-col items-center gap-6 relative overflow-hidden">
+      {/* PixiJS Background */}
+      <GameBackground intensity="medium" />
+      
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center gap-6 w-full">
+        <h1 className="text-3xl font-pixel text-amber-300 mb-4 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">
+          Chơi
+        </h1>
 
-      {hasLantern && lanternId ? (
-        <>
-          <GameHUD />
-          <div className="mt-6 w-full max-w-md">
-            <GameActions
-              lanternId={lanternId}
-              oil={oil}
-              isAlive={isAlive}
-              onSuccess={() => setTimeout(() => refetch(), 1000)}
-            />
-          </div>
-        </>
-      ) : (
-        <p className="text-zinc-400 font-pixel">Bạn chưa có Lantern, hãy bắt đầu một Run mới.</p>
-      )}
+        {hasLantern && lanternId ? (
+          <>
+            <GameHUD />
+            <div className="mt-6 w-full max-w-md">
+              <GameActions
+                lanternId={lanternId}
+                oil={oil}
+                isAlive={isAlive}
+                onSuccess={() => setTimeout(() => refetch(), 1000)}
+              />
+            </div>
+          </>
+        ) : (
+          <p className="text-zinc-400 font-pixel">Bạn chưa có Lantern, hãy bắt đầu một Run mới.</p>
+        )}
+      </div>
     </main>
   );
 }

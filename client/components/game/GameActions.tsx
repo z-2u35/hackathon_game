@@ -5,6 +5,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariable } from "@/app/providers/networkConfig";
 import { useHasGas } from "@/hook/useHasGas";
 import { useMintLantern } from "@/hook/useMintLantern";
+import ButtonParticleEffect from "./ButtonParticleEffect";
 
 interface GameActionsProps {
   lanternId: string;
@@ -84,23 +85,35 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess }: Game
   return (
     <div className="grid grid-cols-1 gap-4 w-full max-w-md mt-6 **:font-pixel">
       <button
+        id="move-button"
         onClick={handleMove}
         disabled={!canMove || !hasGas}
-        className="text-lg cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-white py-4 px-6 rounded border-2 border-zinc-600 hover:border-amber-500 hover:text-amber-500 transition-all shadow-lg active:translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="relative text-lg cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-white py-4 px-6 rounded border-2 border-zinc-600 hover:border-amber-500 hover:text-amber-500 transition-all shadow-lg active:translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
       >
-        <span>🕯️</span>
-        TIẾN VÀO BÓNG TỐI
-        <span className="text-xs text-zinc-500 group-hover:text-amber-600">(-10 Oil)</span>
+        <ButtonParticleEffect 
+          buttonId="move-button" 
+          color={0xffb94a}
+          enabled={canMove && hasGas}
+        />
+        <span className="relative z-10">🕯️</span>
+        <span className="relative z-10">TIẾN VÀO BÓNG TỐI</span>
+        <span className="text-xs text-zinc-500 group-hover:text-amber-600 relative z-10">(-10 Oil)</span>
       </button>
 
       <button
+        id="reset-button"
         onClick={handleResetOil}
         disabled={!hasGas}
-        className="text-lg cursor-pointer bg-amber-700 hover:bg-amber-600 text-white py-4 px-6 rounded border-2 border-amber-900 transition-all shadow-lg active:translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="relative text-lg cursor-pointer bg-amber-700 hover:bg-amber-600 text-white py-4 px-6 rounded border-2 border-amber-900 transition-all shadow-lg active:translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
       >
-        <span>🔄</span>
-        RESET OIL (MINT MỚI)
-        <span className="text-xs text-amber-200/80">(oil=100)</span>
+        <ButtonParticleEffect 
+          buttonId="reset-button" 
+          color={0xff9500}
+          enabled={hasGas}
+        />
+        <span className="relative z-10">🔄</span>
+        <span className="relative z-10">RESET OIL (MINT MỚI)</span>
+        <span className="text-xs text-amber-200/80 relative z-10">(oil=100)</span>
       </button>
     </div>
   );
