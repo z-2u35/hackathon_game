@@ -58,9 +58,13 @@ function EnokiWalletRegistration() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const defaultNetwork =
+    (process.env.NEXT_PUBLIC_SUI_NETWORK as "devnet" | "testnet" | "mainnet") ||
+    "testnet";
+
   return (
     <QueryClientProvider client={queryClient}>
-      <SuiClientProvider networks={networkConfig} defaultNetwork="devnet">
+      <SuiClientProvider networks={networkConfig} defaultNetwork={defaultNetwork}>
         <WalletProvider autoConnect>
           <EnokiWalletRegistration />
           {children}

@@ -7,12 +7,11 @@ import GameHUD from "@/components/game/GameHUD";
 import GameActions from "@/components/game/GameActions";
 
 export default function PlayPage() {
-  const { hasLantern, lanternObjects, refetch } = usePlayerStats();
+  const { hasLantern, lanternObjects, oil, isAlive, refetch } = usePlayerStats();
   const [lanternId, setLanternId] = useState<string | null>(
     lanternObjects.length > 0 ? lanternObjects[0].data.objectId : null
   );
 
-  // Nếu lanternObjects thay đổi, update lanternId
   if (hasLantern && lanternObjects.length > 0 && !lanternId) {
     setLanternId(lanternObjects[0].data.objectId);
   }
@@ -27,6 +26,8 @@ export default function PlayPage() {
           <div className="mt-6 w-full max-w-md">
             <GameActions
               lanternId={lanternId}
+              oil={oil}
+              isAlive={isAlive}
               onSuccess={() => setTimeout(() => refetch(), 1000)}
             />
           </div>
