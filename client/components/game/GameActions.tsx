@@ -39,6 +39,12 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess }: Game
       return;
     }
 
+    // TODO: Function move_room chưa được implement trong smart contract
+    // Tạm thời chỉ hiển thị thông báo, không gọi blockchain
+    alert("👣 Tính năng di chuyển đang được phát triển. Vui lòng chơi game story mode tại /game");
+    
+    // Code cũ - sẽ được enable khi smart contract có function move_room
+    /*
     const tx = new Transaction();
     tx.moveCall({
       target: `${packageId}::lantern::move_room`,
@@ -63,6 +69,7 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess }: Game
         },
       }
     );
+    */
   };
 
   const handleResetOil = () => {
