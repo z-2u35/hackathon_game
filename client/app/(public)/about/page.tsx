@@ -11,6 +11,8 @@ import LanternNature from "@/components/pages/about/AboutLanternNature";
 import TheSeeker from "@/components/pages/about/AboutTheSeeker";
 import JourneyGoal from "@/components/pages/about/AboutJourneyGoal";
 import AboutUs from "@/components/pages/about/AboutUs";
+import { useReveal } from "@/hook/effect/useReveal";
+
 type Star = {
   top: string;
   left: string;
@@ -18,6 +20,32 @@ type Star = {
   x: number;
   y: number;
 };
+
+// Component con cho scroll reveal
+function RevealSection({ children }: { children: React.ReactNode }) {
+  const { ref, show } = useReveal();
+
+  return (
+    <div
+      ref={ref}
+      className={`
+        bg-zinc-800/80
+        p-6
+        rounded-2xl
+        border border-amber-100/20
+        shadow-lg
+        transition-all duration-700 ease-out
+        ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
+        hover:shadow-2xl
+        hover:scale-105
+        hover:border-amber-300/50
+        hover:bg-zinc-700/90
+      `}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function AboutPage() {
   const sections = [
@@ -37,8 +65,8 @@ export default function AboutPage() {
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
       delay: `${Math.random() * 3000}ms`,
-      x: 200 + Math.random() * 300, // random distance X
-      y: 100 + Math.random() * 200, // random distance Y
+      x: 200 + Math.random() * 300,
+      y: 100 + Math.random() * 200,
     }));
     setStars(generated);
   }, []);
@@ -62,41 +90,31 @@ export default function AboutPage() {
         />
       ))}
 
-      {/* HeroSection */}
-      <div className="mx-auto w-full text-center relative z-10">
-        <HeroSection />
-      </div>
+      {/* HeroSection với fadeInUp */}
+      <RevealSection>
+        <div className="mx-auto w-full text-center relative z-10 animate-fadeInUp">
+          <HeroSection />
+        </div>
+      </RevealSection>
 
       {/* Grid sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
         {sections.map((Section, index) => (
-          <div
-            key={index}
-            className="
-              bg-zinc-800/80 
-              p-6 
-              rounded-2xl 
-              border border-amber-100/20 
-              shadow-lg 
-              transition-all duration-300 ease-out
-              hover:shadow-2xl 
-              hover:scale-105 
-              hover:border-amber-300/50 
-              hover:bg-zinc-700/90
-            "
-          >
+          <RevealSection key={index}>
             <Section />
-          </div>
+          </RevealSection>
         ))}
       </div>
 
       {/* EclipsedPit full-width */}
-      <div className="m-6 bg-zinc-800/80 p-6 rounded-2xl border border-amber-100/20 shadow-lg relative z-10">
+      <RevealSection>
         <EclipsedPit />
-      </div>
-      <div className="m-6 bg-zinc-800/80 p-6 rounded-2xl border border-amber-100/20 shadow-lg relative z-10">
+      </RevealSection>
+
+      {/* AboutUs full-width */}
+      <RevealSection>
         <AboutUs />
-      </div>
+      </RevealSection>
     </main>
   );
 }

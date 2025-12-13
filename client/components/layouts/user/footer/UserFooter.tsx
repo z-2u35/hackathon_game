@@ -16,10 +16,11 @@ type LogoItem = { type: "logo"; href: string; src: string };
 type IconItem = { type: "icon"; href: string; icon: IconType };
 type LinkItem = { label: string; href: string };
 type FooterItem = LogoItem | IconItem | LinkItem;
+
 export default function UserFooter() {
   return (
-<footer className="relative w-full min-h-[220px] z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
-      <PixelUserFooterBackground className="absolute bottom-0 left-0 w-full h-10 pointer-events-none" />
+<footer className="relative w-full min-h-55 z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
+      <PixelUserFooterBackground className="absolute bottom-0 left-0 w-full h-full pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-2 flex flex-col gap-6">
         {/* Phần trên: map FootItems */}

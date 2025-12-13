@@ -7,10 +7,11 @@ import { usePlayerStats } from "@/hook/usePlayerStats";
 import GameHUD from "@/components/game/GameHUD";
 import GameActions from "@/components/game/GameActions";
 import GameBackground from "@/components/game/GameBackground";
-import MirrorHallwayGame from "@/components/game/MirrorHallwayGame";
+import MirrorHallwayGame from "@/components/game/rooms/MirrorHallwayGame";
 
 export default function PlayPage() {
-  const { hasLantern, lanternObjects, oil, isAlive, refetch } = usePlayerStats();
+  const { hasLantern, lanternObjects, oil, isAlive, refetch } =
+    usePlayerStats();
   const [lanternId, setLanternId] = useState<string | null>(
     lanternObjects.length > 0 ? lanternObjects[0].data.objectId : null
   );
@@ -45,9 +46,10 @@ export default function PlayPage() {
     <main className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
       {/* PixiJS Background */}
       <GameBackground intensity="medium" />
-      
+
       {/* Content Container */}
-      <div className="relative z-10 container mx-auto px-4 py-6 h-screen flex flex-col">
+      {/* Content Container */}
+      <div className="relative z-10 container mx-auto px-4 py-6 h-screen flex flex-col scale-95 mt-20 origin-top">
         {hasLantern && lanternId ? (
           <>
             {!showGame ? (
@@ -65,7 +67,7 @@ export default function PlayPage() {
                     onSuccess={() => setTimeout(() => refetch(), 1000)}
                   />
                 </div>
-                
+
                 {/* Nút để vào game */}
                 <div className="mt-8 w-full max-w-md">
                   <button
@@ -75,7 +77,8 @@ export default function PlayPage() {
                     🎮 VÀO GAME STORY MODE
                   </button>
                   <p className="text-center text-zinc-500 text-sm mt-2 font-pixel">
-                    Chơi màn chơi "Hành lang Gương" với đồ họa PixiJS isometric
+                    Chơi màn chơi &quot;Hành lang Gương&quot; với đồ họa PixiJS
+                    isometric
                   </p>
                 </div>
               </div>
@@ -102,31 +105,65 @@ export default function PlayPage() {
                     <div className="absolute top-0 right-0 bg-zinc-900/95 border-2 border-amber-600 p-3 rounded-lg font-pixel text-sm max-w-xs z-10">
                       <h3 className="text-amber-400 mb-2 text-xs">Kết quả:</h3>
                       {gameResults.hp && (
-                        <p className={gameResults.hp > 0 ? "text-green-400" : "text-red-400"} style={{ fontSize: '11px' }}>
-                          HP: {gameResults.hp > 0 ? "+" : ""}{gameResults.hp}
+                        <p
+                          className={
+                            gameResults.hp > 0
+                              ? "text-green-400"
+                              : "text-red-400"
+                          }
+                          style={{ fontSize: "11px" }}
+                        >
+                          HP: {gameResults.hp > 0 ? "+" : ""}
+                          {gameResults.hp}
                         </p>
                       )}
                       {gameResults.oil && (
-                        <p className={gameResults.oil > 0 ? "text-green-400" : "text-red-400"} style={{ fontSize: '11px' }}>
-                          Oil: {gameResults.oil > 0 ? "+" : ""}{gameResults.oil}
+                        <p
+                          className={
+                            gameResults.oil > 0
+                              ? "text-green-400"
+                              : "text-red-400"
+                          }
+                          style={{ fontSize: "11px" }}
+                        >
+                          Oil: {gameResults.oil > 0 ? "+" : ""}
+                          {gameResults.oil}
                         </p>
                       )}
                       {gameResults.sanity && (
-                        <p className={gameResults.sanity > 0 ? "text-green-400" : "text-red-400"} style={{ fontSize: '11px' }}>
-                          Sanity: {gameResults.sanity > 0 ? "+" : ""}{gameResults.sanity}
+                        <p
+                          className={
+                            gameResults.sanity > 0
+                              ? "text-green-400"
+                              : "text-red-400"
+                          }
+                          style={{ fontSize: "11px" }}
+                        >
+                          Sanity: {gameResults.sanity > 0 ? "+" : ""}
+                          {gameResults.sanity}
                         </p>
                       )}
                       {gameResults.item && (
-                        <p className="text-green-400" style={{ fontSize: '11px' }}>Item: {gameResults.item}</p>
+                        <p
+                          className="text-green-400"
+                          style={{ fontSize: "11px" }}
+                        >
+                          Item: {gameResults.item}
+                        </p>
                       )}
                       {gameResults.code && (
-                        <p className="text-purple-400" style={{ fontSize: '11px' }}>Code: {gameResults.code}</p>
+                        <p
+                          className="text-purple-400"
+                          style={{ fontSize: "11px" }}
+                        >
+                          Code: {gameResults.code}
+                        </p>
                       )}
                     </div>
                   )}
 
                   {/* Game Canvas */}
-                  <div className="flex-1 border-2 border-amber-600 rounded-lg overflow-hidden bg-black/50 relative min-h-[500px]">
+                  <div className="flex-1 border-2 border-amber-600 rounded-lg overflow-hidden bg-black/50 relative min-h-125">
                     <MirrorHallwayGame onChoice={handleGameChoice} />
                   </div>
 
@@ -151,7 +188,9 @@ export default function PlayPage() {
           </>
         ) : (
           <div className="flex items-center justify-center flex-1">
-            <p className="text-zinc-400 font-pixel text-xl">Bạn chưa có Lantern, hãy bắt đầu một Run mới.</p>
+            <p className="text-zinc-400 font-pixel text-xl">
+              Bạn chưa có Lantern, hãy bắt đầu một Run mới.
+            </p>
           </div>
         )}
       </div>

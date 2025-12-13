@@ -4,7 +4,6 @@ import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // import { registerEnokiWallets } from "@mysten/enoki"; // Tạm thời disable
 import { networkConfig } from "./networkConfig";
-import { useEffect } from "react";
 import "@mysten/dapp-kit/dist/index.css";
 
 const queryClient = new QueryClient();
@@ -60,7 +59,7 @@ function EnokiWalletRegistration() {
 export function Providers({ children }: { children: React.ReactNode }) {
   const defaultNetwork =
     (process.env.NEXT_PUBLIC_SUI_NETWORK as "devnet" | "testnet" | "mainnet") ||
-    "testnet";
+    "devnet";
 
   return (
     <QueryClientProvider client={queryClient}>
