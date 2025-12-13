@@ -3,18 +3,28 @@
 import { useNetworkVariable } from "@/app/providers/networkConfig";
 import { useHasGas } from "@/hook/useHasGas";
 import { useMintLantern } from "@/hook/useMintLantern";
+import { usePlayerStats } from "@/hook/usePlayerStats";
 
 export default function StartGameButton() {
   const packageId = useNetworkVariable("packageId");
   const { hasGas } = useHasGas();
   const { handleMint } = useMintLantern();
+  const { refetch } = usePlayerStats();
 
   const handleStartGame = () => {
     if (!packageId) {
       alert("Package ID chưa có, không thể mint lantern.");
       return;
     }
-    handleMint();
+    
+    handleMint({
+      onSuccess: () => {
+        // Tự động refetch để cập nhật UI sau khi mint thành công
+        setTimeout(() => {
+          refetch();
+        }, 2000); // Đợi 2 giây để blockchain cập nhật
+      },
+    });
   };
 
   return (

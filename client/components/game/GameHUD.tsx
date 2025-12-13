@@ -15,6 +15,7 @@ export default function GameHUD() {
     hp,
     oil,
     sanity,
+    isAlive,
   } = usePlayerStats();
 
   if (!account) return null;
@@ -73,7 +74,9 @@ export default function GameHUD() {
 
         <div className="flex justify-between mt-3">
           <span className="text-zinc-400">TRẠNG THÁI</span>
-          <span className="font-medium text-green-400">CÒN SỐNG</span>
+          <span className={`font-medium ${isAlive ? "text-green-400" : "text-red-400"}`}>
+            {isAlive ? "CÒN SỐNG" : "ĐÃ CHẾT"}
+          </span>
         </div>
       </div>
     </div>

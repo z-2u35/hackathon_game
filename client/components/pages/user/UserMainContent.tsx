@@ -7,9 +7,10 @@ import LoreSection from "./UserLoreSection";
 import TipsSection from "./UserTipsSection";
 import NewsSection from "./UserNewsSection";
 import CommunitySection from "./UserCommunitySection";
+import { usePlayerStats } from "@/hook/usePlayerStats";
 
 export default function UserMainContent() {
-  const hasLantern = true; // hoặc lấy từ hook usePlayerStats
+  const { hasLantern } = usePlayerStats();
 
   return (
     <main className="flex-1 flex flex-col items-center mt-32 px-4 space-y-5">
