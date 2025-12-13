@@ -3,6 +3,8 @@
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariable } from "@/app/providers/networkConfig";
+import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 interface GameActionsProps {
   lanternId: string;
@@ -12,16 +14,33 @@ interface GameActionsProps {
 export default function GameActions({ lanternId, onSuccess }: GameActionsProps) {
   const packageId = useNetworkVariable("packageId");
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+  const account = useCurrentAccount();
+  const network = useNetworkVariable ? useNetworkVariable("url") : getFullnodeUrl("testnet");
+  const suiClient = new SuiClient({ url: network });
 
-  const handleMove = () => {
+  const handleMove = async () => {
+    if (!account?.address) {
+      alert("Không tìm thấy địa chỉ ví.");
+      return;
+    }
+    // Kiểm tra số dư SUI
+    try {
+      const balance = await suiClient.getBalance({ owner: account.address, coinType: "0x2::sui::SUI" });
+      const suiBalance = Number(balance.totalBalance) / 1e9; // SUI = 10^9 MIST
+      if (suiBalance < 0.01) {
+        alert("Ví của bạn không đủ SUI để làm phí gas. Hãy nhận thêm SUI từ faucet testnet!");
+        return;
+      }
+    } catch (e) {
+      alert("Không kiểm tra được số dư SUI. Vui lòng thử lại.");
+      return;
+    }
     const tx = new Transaction();
-
     // Gọi hàm 'move_room' trong contract lantern
     tx.moveCall({
-      target: `${packageId}::lantern::move_room`, 
+      target: `${packageId}::lantern::move_room`,
       arguments: [tx.object(lanternId)],
     });
-
     signAndExecute(
       { transaction: tx },
       {

@@ -14,7 +14,7 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetwork
     url: getFullnodeUrl("testnet"),
     variables: {
       // Package ID từ lần deploy thành công trước đó
-      packageId: "0xe971854d96a1005aed7e1bd41bc703c1f8626d1b70cad7f789ecc41eb9ca7b12",
+      packageId: "0xf28c49f61cfa0853385f04450cc510d7df2fbc6d573b93a2ed04ee15b18076df",
     },
   },
 

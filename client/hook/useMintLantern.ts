@@ -2,13 +2,20 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "@/app/providers/networkConfig";
 
+type MintOptions = {
+  onSuccess?: () => void; // Callback sau khi mint thành công
+  onError?: (error: string) => void; // Callback khi mint thất bại
+};
+
 export function useMintLantern() {
   const packageId = useNetworkVariable("packageId"); // Lấy packageId động
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
-  const handleMint = () => {
+  const handleMint = (options?: MintOptions) => {
     if (!packageId) {
-      alert("Package ID chưa có, không thể mint lantern.");
+      const errorMsg = "Package ID chưa có, không thể mint lantern.";
+      alert(errorMsg);
+      options?.onError?.(errorMsg);
       return;
     }
 
@@ -21,9 +28,10 @@ export function useMintLantern() {
     signAndExecute(
       { transaction: tx },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
+          console.log("Mint thành công:", result);
           alert("✨ Lantern đã được mint!");
-          // Nếu muốn, bạn có thể refetch lại HUD
+          options?.onSuccess?.(); // Gọi callback để refetch data
         },
         onError: (err: unknown) => {
           console.error("Mint thất bại:", err);
@@ -32,6 +40,7 @@ export function useMintLantern() {
               ? (err as { message: string }).message
               : "Unknown error";
           alert("Mint thất bại: " + message);
+          options?.onError?.(message);
         },
       }
     );

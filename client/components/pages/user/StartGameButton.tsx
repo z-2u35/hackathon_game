@@ -1,37 +1,13 @@
-  "use client";
+"use client";
 
-  import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-  import { Transaction } from "@mysten/sui/transactions";
-  // --- SỬA DÒNG NÀY ---
-  // Import từ file cấu hình của bạn, KHÔNG PHẢI từ @mysten/dapp-kit
-  import { useNetworkVariable } from "@/app/providers/networkConfig"; 
+import { useMintLantern } from "@/hook/useMintLantern";
 
-  export default function StartGameButton() {
-    const packageId = useNetworkVariable("packageId");
-    const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+export default function StartGameButton() {
+  const { handleMint } = useMintLantern();
 
-    const handleStartGame = () => {
-      const tx = new Transaction();
-
-      tx.moveCall({
-        target: `${packageId}::lantern::new_game`,
-        arguments: [],
-      });
-
-      signAndExecute(
-        { transaction: tx },
-        {
-          onSuccess: (result) => {
-            console.log("Success:", result);
-            alert("🎮 ĐÃ MINT THÀNH CÔNG! Kiểm tra ví của bạn.");
-          },
-          onError: (err) => {
-            console.error("Error:", err);
-            alert("Lỗi: " + err.message);
-          },
-        }
-      );
-    };
+  const handleStartGame = () => {
+    handleMint();
+  };
 
     return (
       <button

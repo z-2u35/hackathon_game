@@ -7,6 +7,7 @@ import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon } from "@heroicons/reac
 import { navItems } from "./NavItems";
 import { useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit"; 
 import { useRouter } from "next/navigation";
+import { useWalletBalance } from "@/hook/useWalletBalance";
 
 const PixelNavbarBackground = dynamic(
   () => import("../background/PixelUserNavBackground"),
@@ -17,6 +18,7 @@ export default function UserNavbar() {
   const account = useCurrentAccount();
   const { mutate: disconnect } = useDisconnectWallet();
   const router = useRouter();
+  const { displayBalance, isLoading: isLoadingBalance } = useWalletBalance();
 
   if (!account) return null; // fallback nếu chưa đăng nhập
 
@@ -64,6 +66,11 @@ export default function UserNavbar() {
 
                   {/* Wallet info + logout */}
                   <div className="flex items-center gap-2 m-2">
+                    {/* Số dư gas */}
+                    <div className="pixel-text bg-[#1E2130] text-[#D4A94E] font-bold px-3 py-2 rounded-sm border-2 border-[#D4A94E] shadow-md select-none text-[18px]">
+                      {isLoadingBalance ? "..." : `${displayBalance} SUI`}
+                    </div>
+                    {/* Địa chỉ ví */}
                     <div className="pixel-text bg-[#1E2130] text-[#50fa7b] font-bold px-4 py-2 rounded-sm border-2 border-[#50fa7b] shadow-md select-none text-[20px]">
                       {account.address.slice(0, 5)}...{account.address.slice(-4)}
                     </div>
@@ -106,8 +113,13 @@ export default function UserNavbar() {
                 ))}
 
                 <div className="space-y-3 pt-2 border-t border-zinc-600">
+                  {/* Số dư gas (mobile) */}
+                  <div className="pixel-text block w-full text-center bg-[#1E2130] text-[#D4A94E] border-2 border-[#D4A94E] rounded-xl px-4 py-3 font-bold text-[18px]">
+                    Gas: {isLoadingBalance ? "..." : `${displayBalance} SUI`}
+                  </div>
+                  {/* Địa chỉ ví (mobile) */}
                   <div className="pixel-text block w-full text-center bg-[#1E2130] text-[#50fa7b] border border-[#50fa7b] rounded-xl px-4 py-3 font-bold text-[20px]">
-                    Ví: {account.address.slice(0, 5)}...
+                    Ví: {account.address.slice(0, 5)}...{account.address.slice(-4)}
                   </div>
                   <button
                     onClick={handleLogout}
