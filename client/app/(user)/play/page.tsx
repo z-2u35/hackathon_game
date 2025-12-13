@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { usePlayerStats } from "@/hook/usePlayerStats";
 import GameHUD from "@/components/game/GameHUD";
 import GameActions from "@/components/game/GameActions";
@@ -38,6 +39,19 @@ export default function PlayPage() {
                 isAlive={isAlive}
                 onSuccess={() => setTimeout(() => refetch(), 1000)}
               />
+            </div>
+            
+            {/* Link đến Story Mode Game */}
+            <div className="mt-8 w-full max-w-md">
+              <Link
+                href="/game"
+                className="block w-full text-center px-6 py-4 bg-purple-700 hover:bg-purple-600 text-white rounded-lg border-2 border-purple-900 transition-all shadow-lg font-pixel text-lg"
+              >
+                🎮 VÀO GAME STORY MODE
+              </Link>
+              <p className="text-center text-zinc-500 text-sm mt-2 font-pixel">
+                Chơi màn chơi "Hành lang Gương" với đồ họa PixiJS
+              </p>
             </div>
           </>
         ) : (

@@ -19,12 +19,18 @@ export default function UserHeroSection() {
     <section className="w-full bg-zinc-900/70 border border-zinc-800 p-6 rounded-md text-center font-pixel">
       <h1 className="text-4xl text-amber-300 mb-2">Chào mừng trở lại, Seeker.</h1>
       <p className="text-zinc-200 text-lg">{subheading}</p>
-      <div className="mt-4 flex justify-center gap-4">
+      <div className="mt-4 flex justify-center gap-4 flex-wrap">
        <Link
           href="/play"
           className="bg-amber-400 text-zinc-900 px-4 py-2 rounded-md font-pixel hover:bg-amber-300"
         >
           TIẾP TỤC RUN
+        </Link>
+        <Link
+          href="/game"
+          className="bg-purple-600 text-white px-4 py-2 rounded-md font-pixel hover:bg-purple-500"
+        >
+          🎮 VÀO GAME
         </Link>
         <button className="bg-zinc-700 text-zinc-200 px-4 py-2 rounded-md font-pixel hover:bg-zinc-600">
           KHO NFT CỦA BẠN
