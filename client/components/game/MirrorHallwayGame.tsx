@@ -286,25 +286,25 @@ export default function MirrorHallwayGame({ onChoice }: MirrorHallwayGameProps) 
         </div>
       )}
 
-      {/* Hiển thị kết quả */}
+      {/* Message Log/Console ở dưới */}
       {!showDialog && playerChoice && (
-        <div className="absolute bottom-4 left-4 right-4 bg-zinc-900/90 border-2 border-amber-600 p-4 rounded font-pixel text-white">
+        <div className="absolute bottom-4 left-4 right-4 bg-zinc-900/95 border-2 border-amber-600 p-4 rounded-lg font-pixel text-white shadow-lg">
           {playerChoice === 1 && (
-            <div>
+            <div className="space-y-2">
               <p className="text-red-400">💔 Bạn bị kính cứa khi nắm tay! Mất 10 HP.</p>
-              <p className="text-green-400 mt-2">✨ Nhận được: Glass Shard (Vũ khí)</p>
+              <p className="text-green-400">✨ Nhận được: <span className="text-blue-400 cursor-pointer hover:underline">Glass Shard</span> (Vũ khí)</p>
             </div>
           )}
           {playerChoice === 2 && (
-            <div>
+            <div className="space-y-2">
               <p className="text-blue-400">💥 Bạn đập vỡ gương! Mất 5 Dầu.</p>
-              <p className="text-green-400 mt-2">✅ Sanity được bảo toàn.</p>
+              <p className="text-green-400">✅ Sanity được bảo toàn.</p>
             </div>
           )}
           {playerChoice === 3 && (
-            <div>
+            <div className="space-y-2">
               <p className="text-purple-400">👁️ Bạn nhìn thấy con quỷ đằng sau gương! Mất 20 Sanity.</p>
-              <p className="text-green-400 mt-2">🔑 Nhận được mã: 4-0-4</p>
+              <p className="text-green-400">🔑 Nhận được mã: <span className="text-blue-400 cursor-pointer hover:underline">4-0-4</span></p>
             </div>
           )}
         </div>
