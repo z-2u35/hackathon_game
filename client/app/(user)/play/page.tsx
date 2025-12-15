@@ -72,7 +72,7 @@ export default function PlayPage() {
                 <div className="mt-8 w-full max-w-md">
                   <button
                     onClick={() => setShowGame(true)}
-                    className="block w-full text-center px-6 py-4 bg-purple-700 hover:bg-purple-600 text-white rounded-lg border-2 border-purple-900 transition-all shadow-lg font-pixel text-lg"
+                    className="block cursor-pointer w-full text-center px-6 py-4 bg-purple-700 hover:bg-purple-600 text-white rounded-lg border-2 border-purple-900 transition-all shadow-lg font-pixel text-lg"
                   >
                     🎮 VÀO GAME STORY MODE
                   </button>
@@ -171,13 +171,13 @@ export default function PlayPage() {
                   <div className="flex justify-between items-center">
                     <button
                       onClick={() => setShowGame(false)}
-                      className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg border-2 border-zinc-600 transition-all font-pixel"
+                      className="px-4 cursor-pointer py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg border-2 border-zinc-600 transition-all font-pixel"
                     >
                       ← Quay lại
                     </button>
                     <Link
                       href="/game"
-                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 border-2 border-amber-800 rounded font-pixel transition-all"
+                      className="px-4 py-2 cursor-pointer bg-amber-600 hover:bg-amber-500 border-2 border-amber-800 rounded font-pixel transition-all"
                     >
                       Chế độ Game Full
                     </Link>

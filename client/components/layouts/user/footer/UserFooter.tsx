@@ -19,7 +19,7 @@ type FooterItem = LogoItem | IconItem | LinkItem;
 
 export default function UserFooter() {
   return (
-<footer className="relative w-full min-h-55 z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
+    <footer className="relative w-full min-h-55 z-10 bg-[#1E2130] border-t-2 border-[#7A84A2]">
       <PixelUserFooterBackground className="absolute bottom-0 left-0 w-full h-full pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-2 flex flex-col gap-6">
@@ -58,7 +58,13 @@ export default function UserFooter() {
                             <img
                               src={item.src}
                               alt="Logo ASTEROS"
-                              className="h-8 md:h-10"
+                              className="
+    h-10 md:h-12
+    translate-y-1
+    scale-110
+    transition-transform duration-300
+    hover:scale-125
+  "
                             />
                           </Link>
                         );

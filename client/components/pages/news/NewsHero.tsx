@@ -2,7 +2,7 @@
 
 export default function NewsHero() {
   return (
-    <section className="relative h-80 flex items-center justify-center overflow-hidden border-b border-zinc-800">
+    <section className="relative h-80 mt-4 flex items-center justify-center overflow-hidden border-b border-zinc-800">
       {/* Background */}
       <div className="absolute inset-0 bg-[url('/images/news/hero.jpg')] bg-cover bg-center opacity-40" />
       <div className="absolute inset-0 bg-black/70" />

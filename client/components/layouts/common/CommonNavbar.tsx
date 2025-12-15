@@ -1,5 +1,5 @@
 "use client";
-
+import { commonNavItems } from "./commonNavItems";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ export default function CommonNavbar() {
                 {/* Left: Back button + Logo */}
                 <div className="flex items-center gap-4">
                   {/* Back button */}
-                
+
                   {/* Logo */}
                   <div className="w-16 h-16 flex items-center justify-center bg-[#26293A] border-2 border-[#7A84A2] pixel-border rounded-full">
                     <div className="w-12 h-12 pixel-text text-[#D4A94E] text-[25px] select-none">
@@ -57,7 +57,7 @@ export default function CommonNavbar() {
                     </span>
                   </Link>
 
-                    <button
+                  <button
                     onClick={() => router.back()}
                     className="flex items-center justify-center w-12 h-12
              bg-[#26293A] border-2 border-[#7A84A2]
@@ -67,10 +67,33 @@ export default function CommonNavbar() {
                   >
                     <ArrowLeftIcon className="w-6 h-6 text-[#F0F2FA]" />
                   </button>
-
                 </div>
 
                 {/* Desktop menu */}
+                <div className="hidden md:flex items-center gap-6 border-2 border-white rounded-2xl p-2 m-2 mr-20 ">
+                  <div className="flex items-center gap-3 bg-[#1E2130]/50 backdrop-blur-md rounded-3xl px-4">
+                    {commonNavItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="
+          pixel-text
+          border-2 border-white
+          bg-[#26293A]
+          rounded-2xl
+          px-3 py-2
+          text-[#F0F2FA]
+          text-[25px]
+          hover:bg-[#C7B4FF]/20
+          hover:shadow-lg
+          transition-all duration-200
+        "
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Mobile toggle */}
                 <div className="md:hidden flex items-center">
