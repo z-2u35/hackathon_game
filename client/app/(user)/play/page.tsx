@@ -13,7 +13,7 @@ import ActionLog from "@/components/game/ActionLog";
 import { addGameLog } from "@/components/game/ActionLog";
 
 export default function PlayPage() {
-  const { hasLantern, lanternObjects, oil, isAlive, refetch } =
+  const { hasLantern, lanternObjects, oil, isAlive, refetch, hp, sanity } =
     usePlayerStats();
   const [lanternId, setLanternId] = useState<string | null>(
     lanternObjects.length > 0 ? lanternObjects[0].data.objectId : null
