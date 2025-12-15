@@ -8,6 +8,8 @@ import GameHUD from "@/components/game/GameHUD";
 import GameActions from "@/components/game/GameActions";
 import GameBackground from "@/components/game/GameBackground";
 import MirrorHallwayGame from "@/components/game/rooms/MirrorHallwayGame";
+import GameInterface from "@/components/game/GameInterface";
+import { addGameLog } from "@/components/game/ActionLog";
 
 export default function PlayPage() {
   const { hasLantern, lanternObjects, oil, isAlive, refetch } =
@@ -83,105 +85,83 @@ export default function PlayPage() {
                 </div>
               </div>
             ) : (
-              // Layout game mode với 2 cột
-              <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
-                {/* Cột trái: Stats */}
-                <div className="lg:col-span-1 flex flex-col">
-                  <GameHUD />
-                  <div className="mt-4">
-                    <GameActions
-                      lanternId={lanternId}
-                      oil={oil}
-                      isAlive={isAlive}
-                      onSuccess={() => setTimeout(() => refetch(), 1000)}
+              // Layout game mode với GameInterface
+              <div className="flex-1 relative w-full h-full">
+                <GameInterface
+                  onMove={() => {
+                    addGameLog("Bạn đang di chuyển...", "info");
+                    // TODO: Implement move logic
+                  }}
+                  onInteract={() => {
+                    addGameLog("Bạn đang tương tác với vật thể...", "info");
+                  }}
+                  canMove={isAlive !== false && (oil ?? 1) > 0}
+                  items={
+                    gameResults?.item
+                      ? [
+                          {
+                            id: "1",
+                            name: gameResults.item,
+                            icon: "📦",
+                            description: `Vật phẩm: ${gameResults.item}`,
+                            type: "tool",
+                          },
+                        ]
+                      : []
+                  }
+                  onUseItem={(item) => {
+                    addGameLog(`Đã sử dụng: ${item.name}`, "success");
+                  }}
+                >
+                  {/* Isometric Game Canvas */}
+                  <div className="w-full h-full">
+                    <MirrorHallwayGame
+                      onChoice={(choiceId, result) => {
+                        handleGameChoice(choiceId, result);
+                        // Add log entries
+                        if (result.hp) {
+                          addGameLog(
+                            `HP ${result.hp > 0 ? "+" : ""}${result.hp}`,
+                            result.hp > 0 ? "success" : "error"
+                          );
+                        }
+                        if (result.oil) {
+                          addGameLog(
+                            `Oil ${result.oil > 0 ? "+" : ""}${result.oil}`,
+                            result.oil > 0 ? "success" : "warning"
+                          );
+                        }
+                        if (result.sanity) {
+                          addGameLog(
+                            `Sanity ${result.sanity > 0 ? "+" : ""}${result.sanity}`,
+                            result.sanity > 0 ? "success" : "warning"
+                          );
+                        }
+                        if (result.item) {
+                          addGameLog(`Nhận được: ${result.item}`, "success");
+                        }
+                        if (result.code) {
+                          addGameLog(`Mã: ${result.code}`, "success");
+                        }
+                      }}
                     />
                   </div>
-                </div>
+                </GameInterface>
 
-                {/* Cột giữa/phải: Game Canvas */}
-                <div className="lg:col-span-2 flex flex-col gap-4 relative">
-                  {/* Results box ở góc trên phải */}
-                  {gameResults && (
-                    <div className="absolute top-0 right-0 bg-zinc-900/95 border-2 border-amber-600 p-3 rounded-lg font-pixel text-sm max-w-xs z-10">
-                      <h3 className="text-amber-400 mb-2 text-xs">Kết quả:</h3>
-                      {gameResults.hp && (
-                        <p
-                          className={
-                            gameResults.hp > 0
-                              ? "text-green-400"
-                              : "text-red-400"
-                          }
-                          style={{ fontSize: "11px" }}
-                        >
-                          HP: {gameResults.hp > 0 ? "+" : ""}
-                          {gameResults.hp}
-                        </p>
-                      )}
-                      {gameResults.oil && (
-                        <p
-                          className={
-                            gameResults.oil > 0
-                              ? "text-green-400"
-                              : "text-red-400"
-                          }
-                          style={{ fontSize: "11px" }}
-                        >
-                          Oil: {gameResults.oil > 0 ? "+" : ""}
-                          {gameResults.oil}
-                        </p>
-                      )}
-                      {gameResults.sanity && (
-                        <p
-                          className={
-                            gameResults.sanity > 0
-                              ? "text-green-400"
-                              : "text-red-400"
-                          }
-                          style={{ fontSize: "11px" }}
-                        >
-                          Sanity: {gameResults.sanity > 0 ? "+" : ""}
-                          {gameResults.sanity}
-                        </p>
-                      )}
-                      {gameResults.item && (
-                        <p
-                          className="text-green-400"
-                          style={{ fontSize: "11px" }}
-                        >
-                          Item: {gameResults.item}
-                        </p>
-                      )}
-                      {gameResults.code && (
-                        <p
-                          className="text-purple-400"
-                          style={{ fontSize: "11px" }}
-                        >
-                          Code: {gameResults.code}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Game Canvas */}
-                  <div className="flex-1 border-2 border-amber-600 rounded-lg overflow-hidden bg-black/50 relative min-h-125">
-                    <MirrorHallwayGame onChoice={handleGameChoice} />
-                  </div>
-
-                  {/* Nút quay lại */}
-                  <div className="flex justify-between items-center">
-                    <button
-                      onClick={() => setShowGame(false)}
-                      className="px-4 cursor-pointer py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg border-2 border-zinc-600 transition-all font-pixel"
-                    >
-                      ← Quay lại
-                    </button>
-                    <Link
-                      href="/game"
-                      className="px-4 py-2 cursor-pointer bg-amber-600 hover:bg-amber-500 border-2 border-amber-800 rounded font-pixel transition-all"
-                    >
-                      Chế độ Game Full
-                    </Link>
-                  </div>
+                {/* Nút quay lại - Overlay */}
+                <div className="absolute top-4 left-4 z-40 flex gap-2">
+                  <button
+                    onClick={() => setShowGame(false)}
+                    className="px-4 cursor-pointer py-2 bg-zinc-700/90 hover:bg-zinc-600 text-white rounded-lg border-2 border-zinc-600 transition-all font-pixel backdrop-blur-sm"
+                  >
+                    ← Quay lại
+                  </button>
+                  <Link
+                    href="/game"
+                    className="px-4 py-2 cursor-pointer bg-amber-600/90 hover:bg-amber-500 border-2 border-amber-800 rounded font-pixel transition-all backdrop-blur-sm"
+                  >
+                    Chế độ Game Full
+                  </Link>
                 </div>
               </div>
             )}
