@@ -2,18 +2,55 @@
 
 import { useState } from "react";
 
+export type ItemRarity = "common" | "rare" | "epic" | "legendary" | "cursed";
+
 export interface GameItem {
   id: string;
   name: string;
   icon: string;
   description: string;
   type: "consumable" | "key" | "weapon" | "tool";
+  rarity?: ItemRarity;
   effect?: {
     hp?: number;
     oil?: number;
     sanity?: number;
   };
 }
+
+// Rarity color mapping
+export const RARITY_COLORS: Record<ItemRarity, { border: string; bg: string; text: string; glow: string }> = {
+  common: {
+    border: "border-zinc-500",
+    bg: "bg-zinc-800",
+    text: "text-zinc-300",
+    glow: "shadow-[0_0_5px_rgba(161,161,170,0.3)]",
+  },
+  rare: {
+    border: "border-blue-500",
+    bg: "bg-blue-900/30",
+    text: "text-blue-300",
+    glow: "shadow-[0_0_10px_rgba(59,130,246,0.5)]",
+  },
+  epic: {
+    border: "border-purple-500",
+    bg: "bg-purple-900/30",
+    text: "text-purple-300",
+    glow: "shadow-[0_0_15px_rgba(168,85,247,0.6)]",
+  },
+  legendary: {
+    border: "border-amber-500",
+    bg: "bg-amber-900/30",
+    text: "text-amber-300",
+    glow: "shadow-[0_0_20px_rgba(245,158,11,0.8)]",
+  },
+  cursed: {
+    border: "border-red-800",
+    bg: "bg-red-900/40",
+    text: "text-red-400",
+    glow: "shadow-[0_0_15px_rgba(127,29,29,0.6)]",
+  },
+};
 
 interface InventoryModalProps {
   items: GameItem[];
@@ -56,44 +93,73 @@ export default function InventoryModal({
 
         {/* Cột trái: Lưới đồ - Grid 5x4 */}
         <div className="flex-1 grid grid-cols-5 gap-2 p-4 bg-black/40 h-[300px] overflow-y-auto content-start mt-12">
-          {slots.map((item, idx) => (
-            <div
-              key={item ? item.id : `empty-${idx}`}
-              className={`
-                aspect-square border-2 flex items-center justify-center text-2xl relative group
-                ${
-                  item
-                    ? selectedItem?.id === item.id
-                      ? "bg-zinc-700 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
-                      : "bg-zinc-800 border-zinc-500 cursor-pointer hover:border-amber-400 hover:bg-zinc-700"
-                    : "bg-zinc-900/50 border-zinc-800"
-                }
-              `}
-              onClick={() => item && setSelectedItem(item)}
-              title={item ? item.name : undefined}
-            >
-              {item ? (
-                <>
-                  <span>{item.icon}</span>
-                  {/* Tooltip */}
-                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-black border border-white text-white text-[10px] p-2 whitespace-nowrap z-50 font-pixel">
-                    {item.name}
-                  </div>
-                </>
-              ) : null}
-            </div>
-          ))}
+          {slots.map((item, idx) => {
+            const rarity = item?.rarity || "common";
+            const rarityStyle = RARITY_COLORS[rarity];
+            const isSelected = selectedItem?.id === item?.id;
+
+            return (
+              <div
+                key={item ? item.id : `empty-${idx}`}
+                className={`
+                  aspect-square border-2 flex items-center justify-center text-2xl relative group
+                  ${
+                    item
+                      ? isSelected
+                        ? `${rarityStyle.bg} ${rarityStyle.border} ${rarityStyle.glow}`
+                        : `${rarityStyle.bg} ${rarityStyle.border} cursor-pointer hover:${rarityStyle.border} hover:${rarityStyle.glow}`
+                      : "bg-zinc-900/50 border-zinc-800"
+                  }
+                  transition-all
+                `}
+                onClick={() => item && setSelectedItem(item)}
+                title={item ? item.name : undefined}
+              >
+                {item ? (
+                  <>
+                    <span className={rarityStyle.text}>{item.icon}</span>
+                    {/* Rarity indicator - small dot */}
+                    <div
+                      className={`absolute top-1 right-1 w-2 h-2 rounded-full ${rarityStyle.border.replace("border-", "bg-")}`}
+                    />
+                    {/* Tooltip với rarity */}
+                    <div
+                      className={`absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-black border ${rarityStyle.border} ${rarityStyle.text} text-[10px] p-2 whitespace-nowrap z-50 font-pixel ${rarityStyle.glow}`}
+                    >
+                      <div className="font-bold">{item.name}</div>
+                      <div className="text-[8px] text-zinc-500 uppercase mt-0.5">
+                        {rarity}
+                      </div>
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
 
         {/* Cột phải: Chi tiết */}
         <div className="w-1/3 border-l-2 border-zinc-600 pl-4 flex flex-col mt-12">
           {selectedItem ? (
             <>
-              <h3 className="text-xl text-amber-500 mb-2 font-pixel">
-                {selectedItem.name}
-              </h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3
+                  className={`text-xl font-pixel ${
+                    RARITY_COLORS[selectedItem.rarity || "common"].text
+                  }`}
+                >
+                  {selectedItem.name}
+                </h3>
+                <span
+                  className={`text-[10px] uppercase font-pixel px-2 py-1 border ${
+                    RARITY_COLORS[selectedItem.rarity || "common"].border
+                  } ${RARITY_COLORS[selectedItem.rarity || "common"].bg}`}
+                >
+                  {selectedItem.rarity || "common"}
+                </span>
+              </div>
               <div className="text-4xl mb-3">{selectedItem.icon}</div>
-              <p className="text-sm text-zinc-400 mb-4 flex-1 leading-relaxed">
+              <p className="text-sm text-zinc-400 mb-4 flex-1 leading-relaxed font-pixel">
                 {selectedItem.description}
               </p>
 

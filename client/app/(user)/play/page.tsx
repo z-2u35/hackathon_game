@@ -9,7 +9,6 @@ import GameActions from "@/components/game/GameActions";
 import GameBackground from "@/components/game/GameBackground";
 import MirrorHallwayGame from "@/components/game/rooms/MirrorHallwayGame";
 import GameInterface from "@/components/game/GameInterface";
-import ActionLog from "@/components/game/ActionLog";
 import { addGameLog } from "@/components/game/ActionLog";
 
 export default function PlayPage() {
@@ -86,10 +85,34 @@ export default function PlayPage() {
                 </div>
               </div>
             ) : (
-              // Layout game mode với GameInterface
+              // Layout game mode với GameInterface mới (3 layers)
               <div className="flex-1 relative w-full h-full">
-                {/* Isometric Game Canvas - Lớp dưới cùng */}
-                <div className="absolute inset-0 z-0">
+                {/* GameInterface - Quản lý tất cả layers */}
+                <GameInterface
+                  stats={{
+                    oil: oil ?? 0,
+                    sanity: sanity ?? 0,
+                    health: hp ?? 100,
+                    stage: 1,
+                  }}
+                  inventory={
+                    gameResults?.item
+                      ? [
+                          {
+                            id: "1",
+                            name: gameResults.item,
+                            icon: "📦",
+                            description: `Vật phẩm: ${gameResults.item}`,
+                            type: "tool",
+                            rarity: "common",
+                          },
+                        ]
+                      : []
+                  }
+                  lanternId={lanternId ?? ""}
+                  onRefresh={() => setTimeout(() => refetch(), 1000)}
+                >
+                  {/* Layer 0: Isometric Game Canvas */}
                   <MirrorHallwayGame
                     onChoice={(choiceId, result) => {
                       handleGameChoice(choiceId, result);
@@ -120,38 +143,10 @@ export default function PlayPage() {
                       }
                     }}
                   />
-                </div>
-
-                {/* GameInterface - HUD, Inventory, Action Bar */}
-                <GameInterface
-                  stats={{
-                    oil: oil ?? 0,
-                    sanity: sanity ?? 0,
-                    health: hp ?? 100,
-                    stage: 1,
-                  }}
-                  inventory={
-                    gameResults?.item
-                      ? [
-                          {
-                            id: "1",
-                            name: gameResults.item,
-                            icon: "📦",
-                            description: `Vật phẩm: ${gameResults.item}`,
-                            type: "tool",
-                          },
-                        ]
-                      : []
-                  }
-                  lanternId={lanternId ?? ""}
-                  onRefresh={() => setTimeout(() => refetch(), 1000)}
-                >
-                  {/* ActionLog component */}
-                  <ActionLog />
                 </GameInterface>
 
                 {/* Nút quay lại - Overlay */}
-                <div className="absolute top-4 right-4 z-40 flex gap-2">
+                <div className="absolute top-4 right-4 z-40 flex gap-2 pointer-events-auto">
                   <button
                     onClick={() => setShowGame(false)}
                     className="px-4 cursor-pointer py-2 bg-zinc-700/90 hover:bg-zinc-600 text-white rounded-lg border-2 border-zinc-600 transition-all font-pixel backdrop-blur-sm"
