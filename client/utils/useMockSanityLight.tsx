@@ -42,7 +42,7 @@ export function useLight(): readonly [number, (v: number) => void, (d?: number) 
   return [light, setLight, increaseLight, decreaseLight] as const;
 }
 
-export function MockControls(): JSX.Element {
+export function MockControls(): React.ReactElement {
   const [sanity, setSanityVal, toggle] = useSanity();
   const [light, setLightVal, inc, dec] = useLight();
 

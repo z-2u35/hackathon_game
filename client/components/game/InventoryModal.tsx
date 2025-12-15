@@ -94,7 +94,7 @@ export default function InventoryModal({
         {/* Cột trái: Lưới đồ - Grid 5x4 */}
         <div className="flex-1 grid grid-cols-5 gap-2 p-4 bg-black/40 h-[300px] overflow-y-auto content-start mt-12">
           {slots.map((item, idx) => {
-            const rarity = item?.rarity || "common";
+            const rarity: ItemRarity = (item?.rarity || "common") as ItemRarity;
             const rarityStyle = RARITY_COLORS[rarity];
             const isSelected = selectedItem?.id === item?.id;
 

@@ -45,13 +45,12 @@ export default function PlayPage() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
+    <main className="min-h-screen bg-zinc-950 text-white relative overflow-hidden h-screen">
       {/* PixiJS Background */}
       <GameBackground intensity="medium" />
 
       {/* Content Container */}
-      {/* Content Container */}
-      <div className="relative z-10 container mx-auto px-4 py-6 h-screen flex flex-col scale-95 mt-20 origin-top">
+      <div className="relative z-10 container mx-auto px-4 py-6 h-full flex flex-col overflow-hidden">
         {hasLantern && lanternId ? (
           <>
             {!showGame ? (
@@ -86,7 +85,7 @@ export default function PlayPage() {
               </div>
             ) : (
               // Layout game mode với GameInterface mới (3 layers)
-              <div className="flex-1 relative w-full h-full">
+              <div className="flex-1 relative w-full h-full overflow-hidden">
                 {/* GameInterface - Quản lý tất cả layers */}
                 <GameInterface
                   stats={{
@@ -112,37 +111,8 @@ export default function PlayPage() {
                   lanternId={lanternId ?? ""}
                   onRefresh={() => setTimeout(() => refetch(), 1000)}
                 >
-                  {/* Layer 0: Isometric Game Canvas */}
-                  <MirrorHallwayGame
-                    onChoice={(choiceId, result) => {
-                      handleGameChoice(choiceId, result);
-                      // Add log entries với HTML
-                      if (result.hp) {
-                        addGameLog(
-                          `<span class="${result.hp > 0 ? "text-green-400" : "text-red-400"}">HP ${result.hp > 0 ? "+" : ""}${result.hp}</span>`,
-                          result.hp > 0 ? "success" : "error"
-                        );
-                      }
-                      if (result.oil) {
-                        addGameLog(
-                          `<span class="${result.oil > 0 ? "text-green-400" : "text-yellow-400"}">Oil ${result.oil > 0 ? "+" : ""}${result.oil}</span>`,
-                          result.oil > 0 ? "success" : "warning"
-                        );
-                      }
-                      if (result.sanity) {
-                        addGameLog(
-                          `<span class="${result.sanity > 0 ? "text-green-400" : "text-purple-400"}">Sanity ${result.sanity > 0 ? "+" : ""}${result.sanity}</span>`,
-                          result.sanity > 0 ? "success" : "warning"
-                        );
-                      }
-                      if (result.item) {
-                        addGameLog(`<span class="text-green-400">✨ Nhận được: ${result.item}</span>`, "success");
-                      }
-                      if (result.code) {
-                        addGameLog(`<span class="text-purple-400">🔑 Mã: ${result.code}</span>`, "success");
-                      }
-                    }}
-                  />
+                  {/* IsometricLevel sẽ được render tự động nếu không có children */}
+                  {/* Có thể pass MirrorHallwayGame nếu muốn dùng version cũ */}
                 </GameInterface>
 
                 {/* Nút quay lại - Overlay */}

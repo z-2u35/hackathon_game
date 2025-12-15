@@ -6,6 +6,8 @@ import InventoryModal, { GameItem } from "./InventoryModal";
 import ActionConsole from "./ActionConsole";
 import LightSlider from "./LightSlider";
 import ActionLog from "./ActionLog";
+import IsometricLevel from "./IsometricLevel";
+import DialogueBox from "./DialogueBox";
 import { addGameLog } from "./ActionLog";
 import { usePlayerStats } from "@/hook/usePlayerStats";
 
@@ -31,6 +33,12 @@ export default function GameInterface({
 }: GameInterfaceProps) {
   const [isInvOpen, setInvOpen] = useState(false);
   const [lightLevel, setLightLevel] = useState(50); // Default 50%
+  const [dialogue, setDialogue] = useState<{
+    text: string;
+    speaker?: string;
+    choices?: Array<{ id: number; text: string }>;
+  } | null>(null);
+  const [playerPosition, setPlayerPosition] = useState({ x: 1, y: 1 });
   const playerStats = usePlayerStats();
 
   // Sử dụng props nếu có, không thì lấy từ hook
@@ -79,8 +87,8 @@ export default function GameInterface({
     },
   ];
 
-  const addLog = (msg: string) => {
-    addGameLog(msg, "info");
+  const addLog = (msg: string, type?: "info" | "warning" | "success" | "error") => {
+    addGameLog(msg, type || "info");
   };
 
   const handleMove = () => {
@@ -121,14 +129,83 @@ export default function GameInterface({
     // TODO: Implement whisper logic
   };
 
+  // Handle interaction với game objects
+  const handleInteract = (objectType: string, gridX: number, gridY: number) => {
+    switch (objectType) {
+      case "mirror":
+        setDialogue({
+          text: "Ngươi nhìn vào gương... khuôn mặt không phải của ngươi. Một cảm giác lạnh lẽo chạy dọc sống lưng.",
+          speaker: "Gương Vỡ",
+        });
+        addLog('<span class="text-purple-400">👁️ Nhận được: +5 Sanity (nhưng cảm thấy bất an...)</span>', "info");
+        // TODO: Update stats
+        break;
+
+      case "corpse":
+        setDialogue({
+          text: "Một xác chết khô héo. Trong tay hắn có một chiếc chìa khóa cũ kỹ.",
+          speaker: "Xác Chết",
+          choices: [
+            { id: 1, text: "Nhặt chìa khóa" },
+            { id: 2, text: "Bỏ qua" },
+          ],
+        });
+        break;
+
+      case "door":
+        if (inventory.some((item) => item.name === "Old Key")) {
+          setDialogue({
+            text: "Cửa mở ra... Bạn đã vượt qua Hành lang Gương!",
+            speaker: "Cửa",
+          });
+          addLog('<span class="text-green-400">✨ Đã hoàn thành Màn 1!</span>', "success");
+          // TODO: Next level logic
+        } else {
+          setDialogue({
+            text: "Cửa bị khóa. Bạn cần một chiếc chìa khóa để mở.",
+            speaker: "Cửa",
+          });
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  // Handle dialogue choice
+  const handleDialogueChoice = (choiceId: number) => {
+    if (dialogue?.text.includes("chìa khóa")) {
+      if (choiceId === 1) {
+        addLog('<span class="text-green-400">🔑 Nhặt được: Old Key</span>', "success");
+        // TODO: Add item to inventory
+      }
+    }
+    setDialogue(null);
+  };
+
+  // Handle player movement
+  const handlePlayerMove = (x: number, y: number) => {
+    setPlayerPosition({ x, y });
+    addLog(`<span class="text-zinc-300">Vị trí: (${x}, ${y})</span>`, "info");
+  };
+
   return (
-    <div className="absolute inset-0 z-10 pointer-events-none">
+    <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" style={{ touchAction: 'none' }}>
       {/* ============================================ */}
       {/* LAYER 0: Isometric Game Canvas (Dưới cùng) */}
       {/* ============================================ */}
-      {children && (
+      {children ? (
         <div className="absolute inset-0 z-0 pointer-events-auto">
           {children}
+        </div>
+      ) : (
+        <div className="absolute inset-0 z-0 pointer-events-auto">
+          <IsometricLevel
+            lightLevel={lightLevel}
+            onInteract={handleInteract}
+            onPlayerMove={handlePlayerMove}
+          />
         </div>
       )}
 
@@ -167,6 +244,17 @@ export default function GameInterface({
 
       {/* Action Log - Center bottom (above LightSlider) */}
       <ActionLog />
+
+      {/* Dialogue Box - Bottom (Layer 2) */}
+      {dialogue && (
+        <DialogueBox
+          text={dialogue.text}
+          speaker={dialogue.speaker}
+          choices={dialogue.choices}
+          onClose={() => setDialogue(null)}
+          onChoice={handleDialogueChoice}
+        />
+      )}
 
       {/* ============================================ */}
       {/* LAYER 2: Modals (Popup giữa màn hình) */}
