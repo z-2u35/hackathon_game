@@ -57,7 +57,7 @@ export default function UserNavbar() {
                       <Link
                         key={it.href}
                         href={it.href}
-                        className="pixel-text border-2 border-white bg-[#26293A] rounded-2xl px-3 py-2 hover:bg-[#C7B4FF]/20 hover:shadow-lg transition-all duration-200 text-[#F0F2FA] text-[25px]"
+                        className="pixel-text border-2 border-white bg-[#26293A] rounded-2xl px-3 py-2 hover:bg-[#C7B4FF]/20 hover:shadow-lg transition-all duration-200 text-[#F0F2FA] text-[20px]"
                       >
                         {it.label}
                       </Link>
@@ -106,7 +106,7 @@ export default function UserNavbar() {
                     key={it.href}
                     as={Link}
                     href={it.href}
-                    className="pixel-text block w-full text-left bg-[#26293A] rounded-xl px-4 py-3 hover:bg-[#C7B4FF]/20 transition-all duration-200 text-[#F0F2FA] text-[25px]"
+                    className="pixel-text block w-full text-left bg-[#26293A] rounded-xl px-4 py-3 hover:bg-[#C7B4FF]/20 transition-all duration-200 text-[#F0F2FA] text-[20px]"
                   >
                     {it.label}
                   </Disclosure.Button>
