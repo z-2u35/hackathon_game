@@ -1,112 +1,129 @@
 "use client";
 
 import { useState } from "react";
-import DungeonGameHUD from "./DungeonGameHUD";
-import ActionButtons from "./ActionButtons";
-import ActionLog from "./ActionLog";
+import GameHUD from "./GameHUD";
 import InventoryModal, { GameItem } from "./InventoryModal";
+import GameActions from "./GameActions";
+import { addGameLog } from "./ActionLog";
+import { usePlayerStats } from "@/hook/usePlayerStats";
 
 interface GameInterfaceProps {
-  children: React.ReactNode; // Isometric game canvas
-  onMove: () => void;
-  onAttack?: () => void;
-  onInteract?: () => void;
-  canMove?: boolean;
-  items?: GameItem[];
-  onUseItem?: (item: GameItem) => void;
-  onDropItem?: (item: GameItem) => void;
+  stats?: {
+    oil: number;
+    sanity: number;
+    stage: number;
+    health?: number;
+  };
+  inventory?: GameItem[];
+  lanternId?: string;
+  onRefresh?: () => void;
+  children?: React.ReactNode; // Isometric game canvas
 }
 
 export default function GameInterface({
+  stats,
+  inventory = [],
+  lanternId: propLanternId,
+  onRefresh,
   children,
-  onMove,
-  onAttack,
-  onInteract,
-  canMove = true,
-  items = [],
-  onUseItem,
-  onDropItem,
 }: GameInterfaceProps) {
-  const [showInventory, setShowInventory] = useState(false);
+  const [isInvOpen, setInvOpen] = useState(false);
+  const playerStats = usePlayerStats();
+  
+  // Sử dụng props nếu có, không thì lấy từ hook
+  const lanternId = propLanternId ?? playerStats.lanternObjects[0]?.data?.objectId ?? "";
+  const currentOil = stats?.oil ?? playerStats.oil ?? 0;
+  const currentHealth = stats?.health ?? playerStats.hp ?? 100;
+  const currentSanity = stats?.sanity ?? playerStats.sanity ?? 0;
 
-  // Mock items - có thể lấy từ game state sau
-  const defaultItems: GameItem[] = items.length > 0 ? items : [
-    {
-      id: "1",
-      name: "Bình Dầu Cũ",
-      icon: "🛢️",
-      description: "Một bình dầu cũ, có thể hồi 20 Oil.",
-      type: "consumable",
-      effect: { oil: 20 },
-    },
-    {
-      id: "2",
-      name: "Chìa Khóa Đồng",
-      icon: "🗝️",
-      description: "Chìa khóa để mở cửa phòng bí mật.",
-      type: "key",
-    },
-    {
-      id: "3",
-      name: "Mảnh Kính",
-      icon: "🔪",
-      description: "Mảnh kính sắc, có thể dùng làm vũ khí.",
-      type: "weapon",
-    },
-  ];
+  // Mock inventory nếu chưa có
+  const defaultInventory: GameItem[] = inventory.length > 0 ? inventory : [];
 
-  const handleUseItem = (item: GameItem) => {
-    if (onUseItem) {
-      onUseItem(item);
-    } else {
-      // Default behavior
-      console.log("Using item:", item);
-      if (item.effect) {
-        // Apply effect logic here
-      }
-    }
-    setShowInventory(false);
+  const addLog = (msg: string) => {
+    addGameLog(msg, "info");
   };
 
-  const handleDropItem = (item: GameItem) => {
-    if (onDropItem) {
-      onDropItem(item);
-    } else {
-      console.log("Dropping item:", item);
-    }
-    setShowInventory(false);
+  const handleMove = () => {
+    addLog('<span class="text-yellow-400">Bạn đang di chuyển...</span>');
+    // TODO: Implement move logic
   };
 
   return (
-    <div className="relative w-full h-full">
-      {/* Isometric Game Canvas - Lớp dưới cùng */}
-      <div className="absolute inset-0 z-0">{children}</div>
-
-      {/* HUD Layer - Lớp phủ */}
-      <DungeonGameHUD />
-
-      {/* Action Buttons - Góc dưới phải */}
-      <ActionButtons
-        onMove={onMove}
-        onAttack={onAttack}
-        onInteract={onInteract}
-        onInventory={() => setShowInventory(true)}
-        canMove={canMove}
+    <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between">
+      {/* 1. HUD (Góc trái trên) */}
+      <GameHUD
+        oil={currentOil}
+        health={currentHealth}
+        sanity={currentSanity}
+        lanternId={lanternId}
       />
 
-      {/* Action Log - Dưới giữa */}
-      <ActionLog />
+      {/* 2. LOG HÀNH ĐỘNG (Giữa màn hình dưới) */}
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-[500px] text-center pointer-events-none z-30">
+        <div className="flex flex-col-reverse gap-1">
+          {/* Log sẽ được render bởi ActionLog component */}
+        </div>
+      </div>
 
-      {/* Inventory Modal */}
-      {showInventory && (
-        <InventoryModal
-          items={defaultItems}
-          onClose={() => setShowInventory(false)}
-          onUse={handleUseItem}
-          onDrop={handleDropItem}
-        />
+      {/* 3. Isometric Game Canvas - Lớp dưới cùng */}
+      {children && (
+        <div className="absolute inset-0 z-0 pointer-events-auto">
+          {children}
+        </div>
       )}
+
+      {/* 4. INVENTORY MODAL */}
+      {isInvOpen && (
+        <div className="pointer-events-auto z-50">
+          <InventoryModal
+            items={defaultInventory}
+            onClose={() => setInvOpen(false)}
+            onUse={(item) => {
+              addLog(`<span class="text-green-400">Đã sử dụng: ${item.name}</span>`);
+              setInvOpen(false);
+            }}
+            onDrop={(item) => {
+              addLog(`<span class="text-red-400">Đã vứt: ${item.name}</span>`);
+              setInvOpen(false);
+            }}
+          />
+        </div>
+      )}
+
+      {/* 5. ACTION BAR (Thanh điều khiển dưới cùng) */}
+      <div className="bg-gradient-to-t from-black via-black/80 to-transparent p-6 pb-8 flex items-end justify-center gap-4 pointer-events-auto z-30">
+        {/* Nút Mở Túi */}
+        <button
+          onClick={() => setInvOpen(true)}
+          className="h-14 w-14 bg-zinc-800 border-2 border-zinc-500 rounded hover:bg-zinc-700 hover:border-amber-400 active:scale-95 transition-all flex items-center justify-center relative group"
+        >
+          <span className="text-2xl">🎒</span>
+          {defaultInventory.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border border-black font-pixel">
+              {defaultInventory.length}
+            </span>
+          )}
+        </button>
+
+        {/* Các nút hành động chính */}
+        <div className="flex-1 max-w-md">
+          <GameActions
+            lanternId={lanternId}
+            oil={currentOil}
+            isAlive={playerStats.isAlive}
+            onSuccess={() => {
+              if (onRefresh) onRefresh();
+              else playerStats.refetch();
+            }}
+            onAddLog={addLog}
+          />
+        </div>
+
+        {/* Nút Menu/Cài đặt */}
+        <button className="h-14 w-14 bg-zinc-800 border-2 border-zinc-500 rounded hover:bg-zinc-700 active:scale-95 flex items-center justify-center transition-all">
+          ⚙️
+        </button>
+      </div>
     </div>
   );
 }
-

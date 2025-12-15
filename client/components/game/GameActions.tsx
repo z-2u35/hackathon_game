@@ -12,9 +12,10 @@ interface GameActionsProps {
   oil?: number;
   isAlive?: boolean;
   onSuccess: () => void;
+  onAddLog?: (msg: string) => void; // Thêm prop để bắn log
 }
 
-export default function GameActions({ lanternId, oil, isAlive, onSuccess }: GameActionsProps) {
+export default function GameActions({ lanternId, oil, isAlive, onSuccess, onAddLog }: GameActionsProps) {
   const packageId = useNetworkVariable("packageId");
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
   const { hasGas } = useHasGas();
@@ -42,7 +43,11 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess }: Game
 
     // TODO: Function move_room chưa được implement trong smart contract
     // Tạm thời chỉ hiển thị thông báo, không gọi blockchain
-    alert("👣 Tính năng di chuyển đang được phát triển. Vui lòng chơi game story mode tại /game");
+    if (onAddLog) {
+      onAddLog('<span class="text-yellow-400">👣 Tính năng di chuyển đang được phát triển...</span>');
+    } else {
+      alert("👣 Tính năng di chuyển đang được phát triển. Vui lòng chơi game story mode tại /game");
+    }
     
     // Code cũ - sẽ được enable khi smart contract có function move_room
     /*
@@ -76,7 +81,11 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess }: Game
   const handleResetOil = () => {
     handleMint({
       onSuccess: () => {
-        alert("🔄 Đã reset Oil (mint Lantern mới). ");
+        if (onAddLog) {
+          onAddLog('<span class="text-green-400">🔄 Đã reset Oil (mint Lantern mới).</span>');
+        } else {
+          alert("🔄 Đã reset Oil (mint Lantern mới). ");
+        }
         onSuccess();
       },
     });

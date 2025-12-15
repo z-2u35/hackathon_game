@@ -9,6 +9,7 @@ import GameActions from "@/components/game/GameActions";
 import GameBackground from "@/components/game/GameBackground";
 import MirrorHallwayGame from "@/components/game/rooms/MirrorHallwayGame";
 import GameInterface from "@/components/game/GameInterface";
+import ActionLog from "@/components/game/ActionLog";
 import { addGameLog } from "@/components/game/ActionLog";
 
 export default function PlayPage() {
@@ -87,16 +88,49 @@ export default function PlayPage() {
             ) : (
               // Layout game mode với GameInterface
               <div className="flex-1 relative w-full h-full">
+                {/* Isometric Game Canvas - Lớp dưới cùng */}
+                <div className="absolute inset-0 z-0">
+                  <MirrorHallwayGame
+                    onChoice={(choiceId, result) => {
+                      handleGameChoice(choiceId, result);
+                      // Add log entries với HTML
+                      if (result.hp) {
+                        addGameLog(
+                          `<span class="${result.hp > 0 ? "text-green-400" : "text-red-400"}">HP ${result.hp > 0 ? "+" : ""}${result.hp}</span>`,
+                          result.hp > 0 ? "success" : "error"
+                        );
+                      }
+                      if (result.oil) {
+                        addGameLog(
+                          `<span class="${result.oil > 0 ? "text-green-400" : "text-yellow-400"}">Oil ${result.oil > 0 ? "+" : ""}${result.oil}</span>`,
+                          result.oil > 0 ? "success" : "warning"
+                        );
+                      }
+                      if (result.sanity) {
+                        addGameLog(
+                          `<span class="${result.sanity > 0 ? "text-green-400" : "text-purple-400"}">Sanity ${result.sanity > 0 ? "+" : ""}${result.sanity}</span>`,
+                          result.sanity > 0 ? "success" : "warning"
+                        );
+                      }
+                      if (result.item) {
+                        addGameLog(`<span class="text-green-400">✨ Nhận được: ${result.item}</span>`, "success");
+                      }
+                      if (result.code) {
+                        addGameLog(`<span class="text-purple-400">🔑 Mã: ${result.code}</span>`, "success");
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* GameInterface - HUD, Inventory, Action Bar */}
                 <GameInterface
-                  onMove={() => {
-                    addGameLog("Bạn đang di chuyển...", "info");
-                    // TODO: Implement move logic
+                  stats={{
+                    oil: oil ?? 0,
+                    sanity: sanity ?? 0,
+                    health: hp ?? 100,
+                    stage: 1,
                   }}
-                  onInteract={() => {
-                    addGameLog("Bạn đang tương tác với vật thể...", "info");
-                  }}
-                  canMove={isAlive !== false && (oil ?? 1) > 0}
-                  items={
+                  inventory={
                     gameResults?.item
                       ? [
                           {
@@ -109,47 +143,15 @@ export default function PlayPage() {
                         ]
                       : []
                   }
-                  onUseItem={(item) => {
-                    addGameLog(`Đã sử dụng: ${item.name}`, "success");
-                  }}
+                  lanternId={lanternId ?? ""}
+                  onRefresh={() => setTimeout(() => refetch(), 1000)}
                 >
-                  {/* Isometric Game Canvas */}
-                  <div className="w-full h-full">
-                    <MirrorHallwayGame
-                      onChoice={(choiceId, result) => {
-                        handleGameChoice(choiceId, result);
-                        // Add log entries
-                        if (result.hp) {
-                          addGameLog(
-                            `HP ${result.hp > 0 ? "+" : ""}${result.hp}`,
-                            result.hp > 0 ? "success" : "error"
-                          );
-                        }
-                        if (result.oil) {
-                          addGameLog(
-                            `Oil ${result.oil > 0 ? "+" : ""}${result.oil}`,
-                            result.oil > 0 ? "success" : "warning"
-                          );
-                        }
-                        if (result.sanity) {
-                          addGameLog(
-                            `Sanity ${result.sanity > 0 ? "+" : ""}${result.sanity}`,
-                            result.sanity > 0 ? "success" : "warning"
-                          );
-                        }
-                        if (result.item) {
-                          addGameLog(`Nhận được: ${result.item}`, "success");
-                        }
-                        if (result.code) {
-                          addGameLog(`Mã: ${result.code}`, "success");
-                        }
-                      }}
-                    />
-                  </div>
+                  {/* ActionLog component */}
+                  <ActionLog />
                 </GameInterface>
 
                 {/* Nút quay lại - Overlay */}
-                <div className="absolute top-4 left-4 z-40 flex gap-2">
+                <div className="absolute top-4 right-4 z-40 flex gap-2">
                   <button
                     onClick={() => setShowGame(false)}
                     className="px-4 cursor-pointer py-2 bg-zinc-700/90 hover:bg-zinc-600 text-white rounded-lg border-2 border-zinc-600 transition-all font-pixel backdrop-blur-sm"

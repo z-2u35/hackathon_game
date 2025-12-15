@@ -1,83 +1,105 @@
-// components/game/GameHUD.tsx
 "use client";
 
+import React from "react";
 import { usePlayerStats } from "@/hook/usePlayerStats";
-import { FaHeart, FaTint, FaBrain } from "react-icons/fa";
 
-export default function GameHUD() {
-  const {
-    account,
-    isLoading,
-    isError,
-    hasLantern,
-    MAX_OIL,
-    MAX_SANITY,
-    hp,
-    oil,
-    sanity,
-    isAlive,
-  } = usePlayerStats();
+interface GameHUDProps {
+  oil?: number;
+  health?: number;
+  sanity?: number;
+  lanternId?: string;
+}
 
-  if (!account) return null;
+export default function GameHUD({ 
+  oil: propOil, 
+  health: propHealth, 
+  sanity: propSanity,
+  lanternId: propLanternId 
+}: GameHUDProps) {
+  const playerStats = usePlayerStats();
+  
+  // Sử dụng props nếu có, không thì lấy từ hook
+  const oil = propOil ?? playerStats.oil ?? 0;
+  const health = propHealth ?? playerStats.hp ?? 100;
+  const sanity = propSanity ?? playerStats.sanity ?? 0;
+  const lanternId = propLanternId ?? playerStats.lanternObjects[0]?.data?.objectId ?? "";
 
-  if (isLoading) {
-    return (
-      <div className="w-full text-center text-zinc-400 font-pixel">
-        Đang kiểm tra ví...
+  // Hàm tạo thanh bar pixel
+  const renderBar = (
+    value: number,
+    colorClass: string,
+    label: string,
+    icon: string,
+    max: number = 100
+  ) => (
+    <div className="flex flex-col mb-2 w-full">
+      <div className="flex justify-between text-[10px] text-gray-400 mb-1 font-pixel uppercase">
+        <span>
+          {icon} {label}
+        </span>
+        <span>{value}/{max}</span>
       </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="w-full text-center text-red-400 font-pixel">
-        Lỗi khi đọc dữ liệu Blockchain.
+      <div className="h-3 w-full bg-zinc-900 border border-zinc-600 relative p-[1px]">
+        <div
+          className={`h-full ${colorClass} transition-all duration-500`}
+          style={{ width: `${Math.max(0, Math.min(100, (value / max) * 100))}%` }}
+        />
+        {/* Hiệu ứng bóng láng trên thanh bar */}
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-white/20 pointer-events-none" />
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (!hasLantern) return null;
-
-  const stats = [
-    { label: "HEALTH", value: hp, max: 100, gradient: "from-red-600 to-red-400", icon: <FaHeart className="text-red-400" /> },
-    { label: "OIL", value: oil, max: MAX_OIL, gradient: "from-blue-600 to-blue-400", icon: <FaTint className="text-blue-400" /> },
-    { label: "SANITY", value: sanity, max: MAX_SANITY, gradient: "from-purple-600 to-purple-400", icon: <FaBrain className="text-purple-400" /> },
-  ];
+  if (!playerStats.hasLantern && !propLanternId) return null;
 
   return (
-    <div className="w-full max-w-sm bg-zinc-900/70 border border-zinc-800 p-6 rounded-md text-left font-pixel">
-      <h3 className="text-xl text-amber-300 mb-3">TRẠNG THÁI NHÂN VẬT</h3>
-
-      <div className="flex flex-col gap-3 text-sm text-zinc-200">
-        {stats.map((stat) => {
-          const percentage = (stat.value / stat.max) * 100;
-          return (
-            <div key={stat.label}>
-              <div className="flex items-center gap-1 mb-1">
-                {stat.icon}
-                <span className="text-zinc-400">{stat.label}</span>
-                <span className="ml-auto font-mono">{stat.value}/{stat.max}</span>
-              </div>
-              {/* Thanh pixel gradient */}
-              <div className="w-full h-4 bg-zinc-700 rounded overflow-hidden relative">
-                <div
-                  className={`h-full rounded transition-all duration-300 bg-linear-to-r ${stat.gradient}`}
-                  style={{
-                    width: `${percentage}%`,
-                    backgroundSize: "4px 4px", // tạo hiệu ứng pixel
-                  }}
-                ></div>
-              </div>
-            </div>
-          );
-        })}
-
-        <div className="flex justify-between mt-3">
-          <span className="text-zinc-400">TRẠNG THÁI</span>
-          <span className={`font-medium ${isAlive ? "text-green-400" : "text-red-400"}`}>
-            {isAlive ? "CÒN SỐNG" : "ĐÃ CHẾT"}
+    <div className="absolute top-4 left-4 p-4 bg-black/80 border-2 border-zinc-600 rounded-sm min-w-[240px] pointer-events-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] z-30">
+      {/* Avatar & Info */}
+      <div className="flex gap-3 mb-4 border-b border-zinc-700 pb-3">
+        <div className="w-12 h-12 bg-zinc-800 border border-zinc-500 flex items-center justify-center text-2xl shadow-inner">
+          🧙‍♂️
+        </div>
+        <div className="flex flex-col justify-center">
+          <h2 className="text-amber-500 font-pixel text-sm">THE SEEKER</h2>
+          <span className="text-[10px] text-zinc-500 font-mono truncate w-24">
+            ID: {lanternId.slice(0, 6)}...
           </span>
         </div>
+      </div>
+
+      {/* Stats Bars */}
+      {renderBar(
+        health,
+        "bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.6)]",
+        "Sức khỏe",
+        "❤️",
+        100
+      )}
+      {renderBar(
+        oil,
+        "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)]",
+        "Đèn Dầu",
+        "🔥",
+        playerStats.MAX_OIL ?? 100
+      )}
+      {renderBar(
+        sanity,
+        "bg-purple-600",
+        "Tinh thần",
+        "👁️",
+        playerStats.MAX_SANITY ?? 100
+      )}
+
+      {/* Status */}
+      <div className="mt-2 pt-2 border-t border-zinc-700 flex justify-between items-center">
+        <span className="text-[10px] text-zinc-500 font-pixel">TRẠNG THÁI</span>
+        <span
+          className={`text-[10px] font-bold font-pixel ${
+            playerStats.isAlive ? "text-green-400" : "text-red-400"
+          }`}
+        >
+          {playerStats.isAlive ? "CÒN SỐNG" : "ĐÃ CHẾT"}
+        </span>
       </div>
     </div>
   );

@@ -68,19 +68,17 @@ export default function ActionLog({ maxEntries = 5 }: ActionLogProps) {
   };
 
   return (
-    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 pointer-events-auto z-30 w-full max-w-2xl px-4">
-      <div className="bg-black/70 backdrop-blur-sm border-2 border-amber-600 p-3 rounded-lg shadow-lg font-pixel text-sm max-h-32 overflow-y-auto">
-        <div className="space-y-1">
-          {logs.map((log) => (
-            <div
-              key={log.id}
-              className={`${getLogColor(log.type)} animate-fade-in`}
-            >
-              &gt; {log.message}
-            </div>
-          ))}
-          <div ref={logEndRef} />
-        </div>
+    <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 pointer-events-auto z-30 w-full max-w-2xl px-4">
+      <div className="flex flex-col-reverse gap-1">
+        {logs.map((log, i) => (
+          <div
+            key={log.id}
+            className={`text-sm font-pixel bg-black/60 px-4 py-1 rounded-full text-zinc-200 animate-fade-in shadow-lg border border-amber-600/30`}
+            style={{ opacity: 1 - i * 0.3 }} // Dòng cũ sẽ mờ dần
+            dangerouslySetInnerHTML={{ __html: `&gt; ${log.message}` }}
+          />
+        ))}
+        <div ref={logEndRef} />
       </div>
     </div>
   );

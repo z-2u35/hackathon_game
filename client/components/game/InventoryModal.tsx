@@ -30,60 +30,58 @@ export default function InventoryModal({
 }: InventoryModalProps) {
   const [selectedItem, setSelectedItem] = useState<GameItem | null>(null);
 
-  // Tạo grid 4x4 (16 slots)
-  const gridSize = 16;
-  const emptySlots = gridSize - items.length;
+  // Tạo grid 5x4 (20 slots) như yêu cầu
+  const totalSlots = 20;
+  const slots = [...items, ...Array(Math.max(0, totalSlots - items.length)).fill(null)];
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
-        className="bg-zinc-800 border-4 border-zinc-500 w-[700px] h-[500px] p-6 flex gap-6 shadow-2xl font-pixel text-white relative"
+        className="bg-zinc-900 border-4 border-zinc-600 w-[600px] p-1 shadow-2xl font-pixel text-white relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 w-8 h-8 bg-red-900 hover:bg-red-800 border-2 border-red-600 flex items-center justify-center text-red-200 font-bold transition-all"
-        >
-          ✕
-        </button>
-
         {/* Header */}
-        <div className="absolute top-4 left-6 right-6 border-b-2 border-zinc-600 pb-2">
-          <h2 className="text-2xl text-amber-400 font-pixel">HÀNH TRANG</h2>
+        <div className="bg-zinc-800 p-2 border-b-4 border-zinc-700 flex justify-between items-center mb-4">
+          <h3 className="text-white text-lg ml-2 font-pixel">🎒 HÀNH TRANG</h3>
+          <button
+            onClick={onClose}
+            className="text-red-400 hover:text-red-200 text-xl font-bold px-3 transition-colors"
+          >
+            X
+          </button>
         </div>
 
-        {/* Cột trái: Lưới đồ */}
-        <div className="flex-1 grid grid-cols-4 gap-2 content-start mt-12">
-          {items.map((item, idx) => (
+        {/* Cột trái: Lưới đồ - Grid 5x4 */}
+        <div className="flex-1 grid grid-cols-5 gap-2 p-4 bg-black/40 h-[300px] overflow-y-auto content-start mt-12">
+          {slots.map((item, idx) => (
             <div
-              key={item.id}
-              className={`aspect-square bg-black border-2 ${
-                selectedItem?.id === item.id
-                  ? "border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
-                  : "border-zinc-600 hover:border-amber-500"
-              } cursor-pointer flex items-center justify-center transition-all relative group`}
-              onClick={() => setSelectedItem(item)}
-              title={item.name}
+              key={item ? item.id : `empty-${idx}`}
+              className={`
+                aspect-square border-2 flex items-center justify-center text-2xl relative group
+                ${
+                  item
+                    ? selectedItem?.id === item.id
+                      ? "bg-zinc-700 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+                      : "bg-zinc-800 border-zinc-500 cursor-pointer hover:border-amber-400 hover:bg-zinc-700"
+                    : "bg-zinc-900/50 border-zinc-800"
+                }
+              `}
+              onClick={() => item && setSelectedItem(item)}
+              title={item ? item.name : undefined}
             >
-              <span className="text-3xl">{item.icon}</span>
-              {/* Quantity indicator nếu có */}
-              {item.type === "consumable" && (
-                <span className="absolute bottom-0 right-0 bg-amber-600 text-black text-[10px] px-1 font-bold">
-                  1
-                </span>
-              )}
+              {item ? (
+                <>
+                  <span>{item.icon}</span>
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-black border border-white text-white text-[10px] p-2 whitespace-nowrap z-50 font-pixel">
+                    {item.name}
+                  </div>
+                </>
+              ) : null}
             </div>
-          ))}
-          {/* Tạo ô trống */}
-          {Array.from({ length: emptySlots }).map((_, i) => (
-            <div
-              key={`empty-${i}`}
-              className="aspect-square bg-black/50 border border-zinc-700 opacity-50"
-            />
           ))}
         </div>
 
@@ -162,6 +160,9 @@ export default function InventoryModal({
           <div className="mt-auto pt-4 border-t border-zinc-600">
             <div className="text-sm text-amber-400 font-pixel">
               Vàng: <span className="text-white">100</span>
+            </div>
+            <div className="text-xs text-zinc-500 text-center mt-2 font-pixel">
+              Kéo thả hoặc nhấn đúp để sử dụng vật phẩm.
             </div>
           </div>
         </div>
