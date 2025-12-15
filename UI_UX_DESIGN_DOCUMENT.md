@@ -309,20 +309,39 @@ Khi chưa vào game (`showGame = false`):
 │  - Isometric tiles, player sprite, mirrors              │
 ├─────────────────────────────────────────────────────────┤
 │  [HUD Layer - Layer 1]                                  │
-│  ┌─────────────┐              ┌─────────────┐          │
-│  │ GameHUD     │              │ Mini-map    │          │
-│  │ (Top Left)  │              │ (Top Right) │          │
-│  │ - Avatar    │              │ - Area name │          │
-│  │ - Stats     │              │ - Grid 4x4  │          │
-│  │   bars      │              │ - Compass   │          │
-│  └─────────────┘              └─────────────┘          │
+│  ┌─────────────┐                                        │
+│  │ GameHUD     │                                        │
+│  │ (Top Left)  │                                        │
+│  │ - Avatar 🧙‍♂️ │                                        │
+│  │ - Health ❤️ │                                        │
+│  │ - Oil 🔥     │                                        │
+│  │ - Sanity 👁️ │                                        │
+│  │ - Status    │                                        │
+│  └─────────────┘                                        │
 │                                                         │
-│  [Action Log - Center Bottom]                           │
+│  [LightSlider - Center Bottom]                          │
+│  ┌─────────────────────────────────────┐              │
+│  │ 👁️ Ẩn nấp | 🕯️ Bình thường | ☀️ Sự thật │              │
+│  │ [============●========] 50%          │              │
+│  │ Oil x1.0 | Sanity x1.0                │              │
+│  └─────────────────────────────────────┘              │
+│                                                         │
+│  [Action Log - Above LightSlider]                       │
 │  > Bạn vừa bước vào...                                 │
 │  > HP +10                                               │
 │                                                         │
-│  [Action Bar - Bottom]                                  │
-│  [🎒] [GameActions Buttons] [⚙️]                      │
+│  [ActionConsole - Bottom Right]                         │
+│  ┌─────────────────────────┐                          │
+│  │ Bảng Điều Khiển         │                          │
+│  │ [👣 Move] [😴 Rest]     │                          │
+│  │ [🔍 Search] [⚔️ Attack] │                          │
+│  │ [💡 Focus] [💬 Whisper]  │                          │
+│  │ ┌─────────────────────┐ │                          │
+│  │ │ > Log messages...   │ │                          │
+│  │ └─────────────────────┘ │                          │
+│  └─────────────────────────┘                          │
+│                                                         │
+│  [🎒 Inventory Button - Top Right]                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -330,18 +349,21 @@ Khi chưa vào game (`showGame = false`):
 
 **Kích thước & Vị trí**:
 - Position: `absolute top-4 left-4`
-- Min width: `240px`
+- Min width: `260px` (tăng từ 240px)
 - Background: `black/80` (80% opacity)
 - Border: `2px zinc-600`
 - Shadow: `shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]` (3D effect)
 
 **Cấu trúc**:
 1. **Avatar & Info Section**:
-   - Avatar frame: `w-12 h-12` (48x48px)
-     - Background: `zinc-800`
-     - Border: `border-zinc-500`
-     - Icon: 🧙‍♂️ (wizard emoji)
+   - Avatar frame: `w-14 h-14` (56x56px) - **Pixel Art Style**
+     - Background: `zinc-800` với gradient `from-amber-600 via-amber-700 to-amber-800`
+     - Border: `border-2 border-zinc-500`
+     - Icon: 🧙‍♂️ (wizard emoji) - placeholder, có thể thay bằng pixel art image
      - Shadow: `shadow-inner`
+     - **Ancient frame effect**: 
+       - Corner decorations: 4 góc có `w-2 h-2 bg-amber-600/50`
+       - Inner border: `border-2 border-amber-600/30`
    - Title: "THE SEEKER"
      - Color: `amber-500`
      - Font: Pixel, size: `text-sm`
@@ -351,30 +373,59 @@ Khi chưa vào game (`showGame = false`):
    - Border bottom: `border-b border-zinc-700`
 
 2. **Stats Bars Section**:
-   Mỗi bar có cấu trúc:
+   
+   **Health Bar**:
    ```
    ┌─────────────────────────────────┐
    │ ❤️ Sức khỏe          100/100    │
    │ ┌─────────────────────────────┐ │
-   │ │█████████████████████████████│ │ ← Red bar
+   │ │█████████████████████████████│ │ ← Red bar với glow
    │ └─────────────────────────────┘ │
    └─────────────────────────────────┘
    ```
+   - Height: `h-3` (12px)
+   - Color: `bg-red-600` với `shadow-[0_0_8px_rgba(220,38,38,0.6)]`
+   - Highlight: Top border `h-[2px] bg-white/20`
    
-   - **Label**: Icon + Text (uppercase), `text-[10px]`, `gray-400`
-   - **Value**: `{value}/{max}`, right-aligned
-   - **Bar Container**: 
-     - Height: `h-3` (12px)
-     - Background: `zinc-900`
-     - Border: `border-zinc-600`
-     - Padding: `p-[1px]` (tạo border effect)
-   - **Bar Fill**:
-     - Health: `bg-red-600` với `shadow-[0_0_8px_rgba(220,38,38,0.6)]`
-     - Oil: `bg-amber-500` với `shadow-[0_0_10px_rgba(245,158,11,0.8)]`
-     - Sanity: `bg-purple-600`
-     - Transition: `duration-500`
-   - **Highlight Effect**: 
-     - Top border: `h-[2px] bg-white/20` (bóng láng)
+   **Oil Bar (Quan trọng nhất)**:
+   ```
+   ┌─────────────────────────────────┐
+   │ 🔥 Đèn Dầu          100/100      │
+   │ ┌─────────────────────────────┐ │
+   │ │█████████████████████████████│ │ ← Liquid effect
+   │ │  OIL LEVEL (hoặc ⚠️ LOW)     │ │ ← Text overlay
+   │ └─────────────────────────────┘ │
+   └─────────────────────────────────┘
+   ```
+   - Height: `h-6` (24px) - **Lớn hơn các bar khác**
+   - Color: Gradient `from-yellow-600 via-amber-500 to-amber-400`
+   - Glow: `shadow-[0_0_10px_rgba(245,158,11,0.3)]`
+   - **Liquid Effects**:
+     - Water gradient: `from-transparent via-white/20 to-transparent`
+     - Ripple effect: Bottom border `h-1 bg-white/30 animate-pulse`
+   - **Warning State** (< 20%):
+     - Border: Đổi sang `border-red-600`
+     - Animation: `animate-pulse`
+     - Text overlay: "⚠️ LOW" thay vì "OIL LEVEL"
+     - Value text: `text-red-400 animate-pulse`
+   
+   **Sanity Bar (Glitch Effect)**:
+   ```
+   ┌─────────────────────────────────┐
+   │ 👁️ Tinh thần        100/100      │
+   │ ┌─────────────────────────────┐ │
+   │ │█████████████████████████████│ │ ← Purple với glitch
+   │ └─────────────────────────────┘ │
+   └─────────────────────────────────┘
+   ```
+   - Height: `h-4` (16px)
+   - Color: `bg-gradient-to-r from-purple-600 to-purple-400`
+   - **Glitch Effect** (khi < 50%):
+     - Animation: `animate-pulse`
+     - Glitch overlay: `from-transparent via-white/30 to-transparent`
+     - Red flash: `bg-red-500/20` khi glitch active
+     - Text shake: `translate-x-1` khi glitch
+   - Border: `border-purple-700`
 
 3. **Status Section**:
    - Border top: `border-t border-zinc-700`
@@ -438,7 +489,140 @@ Khi chưa vào game (`showGame = false`):
     - Border: `border-2 border-zinc-600`
     - Active: `translate-y-1`
 
-#### **Action Log Component (Center Bottom)**
+#### **LightSlider Component (Góc dưới giữa) - CƠ CHẾ CỐT LÕI**
+
+**Vị trí**: `absolute bottom-32 left-1/2 -translate-x-1/2`
+
+**Kích thước & Style**:
+- Min width: `300px`
+- Background: `black/80` với `backdrop-blur-sm`
+- Border: `border-2 border-amber-600`
+- Shadow: `shadow-lg`
+
+**Cấu trúc**:
+1. **Header**:
+   - Mode icon: 👁️ (Stealth), 🕯️ (Normal), ☀️ (Truth)
+   - Mode name: "Ẩn nấp" / "Bình thường" / "Sự thật"
+   - Stats: `{lightLevel}% | Oil x{rate} | Sanity x{rate}`
+     - Font: Mono, `text-[10px]`, `zinc-500`
+
+2. **Slider Track**:
+   - Height: `h-4` (16px)
+   - Background: `zinc-900` với `border-zinc-600`
+   - Fill color theo mode:
+     - Stealth: `bg-blue-600`
+     - Normal: `bg-amber-400`
+     - Truth: `bg-amber-500` với pulse effect
+   - Glow: `shadow-[0_0_10px_rgba(245,158,11,0.5)]`
+
+3. **Thumb Indicator**:
+   - Size: `w-6 h-6` (24x24px)
+   - Color: `bg-amber-400` với `border-2 border-amber-600`
+   - Glow: Tăng intensity khi Truth mode
+   - Animation: Pulse effect khi Truth
+
+4. **Mode Labels**:
+   - 0%, 30%, 70%, 100%
+   - Active mode label: Highlighted với mode color
+
+5. **Mode Description**:
+   - Font: Pixel, `text-[10px]`, `zinc-400`
+   - Text thay đổi theo mode
+
+**Logic Gameplay**:
+- **Stealth Mode (0-30%)**:
+  - Oil consumption: 50% (tiết kiệm)
+  - Sanity drain: 100% (bình thường)
+  - Visual: Screen brightness giảm 40% (`brightness(0.6)`)
+  - Risk: Tăng nguy cơ bị tấn công, dễ dẫm bẫy
+
+- **Normal Mode (31-70%)**:
+  - Oil consumption: 100% (bình thường)
+  - Sanity drain: 100% (bình thường)
+  - Visual: Screen brightness bình thường (`brightness(1.0)`)
+  - Balance: Cân bằng giữa ánh sáng và tài nguyên
+
+- **Truth Mode (71-100%)**:
+  - Oil consumption: 200% (tốn gấp đôi)
+  - Sanity drain: 150% (giảm nhanh)
+  - Visual: Screen brightness tăng 20% (`brightness(1.2)`)
+  - Benefit: Nhìn thấy sự thật, nhận lore ẩn, thấy ảo giác → sự thật
+
+**Visual Effects**:
+- Brightness filter: Áp dụng cho toàn màn hình
+- Liquid animation: Cho Truth mode fill
+- Pulse: Cho Truth mode thumb
+
+#### **ActionConsole Component (Góc dưới phải) - RPG-STYLE**
+
+**Vị trí**: `absolute bottom-4 right-4`
+
+**Kích thước & Style**:
+- Min width: `320px`, Max width: `400px`
+- Background: `black/90`
+- Border: `border-4 border-zinc-600`
+- Shadow: `shadow-2xl`
+- Font: Pixel
+
+**Cấu trúc**:
+1. **Header**:
+   - Title: "Bảng Điều Khiển"
+     - Color: `amber-400`
+     - Font: Pixel, `text-sm`, uppercase
+   - Border bottom: `border-b-2 border-zinc-700`
+
+2. **Action Buttons Grid** (2x2):
+   - **Move** (👣):
+     - Background: `zinc-800`
+     - Border: `border-2 border-zinc-600`
+     - Hover: `hover:border-amber-500`
+     - Disabled: Khi không thể di chuyển
+   
+   - **Rest** (😴):
+     - Background: `zinc-800`
+     - Hover: `hover:border-green-500`
+     - Effect: Hồi Sanity, mất Oil
+   
+   - **Search** (🔍):
+     - Background: `zinc-800`
+     - Hover: `hover:border-blue-500`
+     - Effect: Tìm kiếm items, codes
+   
+   - **Attack** (⚔️):
+     - Background: `red-900`
+     - Border: `border-2 border-red-600`
+     - Hover: `hover:border-red-400`
+
+3. **Special Actions** (nếu có):
+   - **Focus Light** (💡):
+     - Background: `amber-900`
+     - Border: `border-2 border-amber-600`
+     - Disabled: Khi Oil < 10
+     - Effect: Làm choáng kẻ địch, tốn 10 Oil
+   
+   - **Whisper** (💬):
+     - Background: `purple-900`
+     - Border: `border-2 border-purple-600`
+     - Disabled: Khi Sanity < 20
+     - Effect: Dùng Memory Shard, tốn 20 Sanity
+
+4. **Log Window**:
+   - Background: `black/60`
+   - Border: `border-2 border-zinc-700`
+   - Height: `h-24` (96px)
+   - Overflow: `overflow-y-auto`
+   - Content:
+     - Font: Pixel, `text-[10px]`, `zinc-300`
+     - Auto-scroll: Tự động scroll đến log mới nhất
+     - Max entries: 10 logs
+     - HTML support: Có thể chứa `<span>` với colors
+
+**Interactions**:
+- Click action: Thêm log vào window và gọi callback
+- Disabled states: Visual feedback rõ ràng
+- Hover effects: Border đổi màu theo action type
+
+#### **Action Log Component (Above LightSlider)**
 
 **Vị trí**: `absolute bottom-24 left-1/2 -translate-x-1/2`
 
@@ -461,58 +645,21 @@ Khi chưa vào game (`showGame = false`):
 
 **Initial message**: "Bạn vừa bước vào một căn phòng lạnh lẽo..."
 
-#### **Action Bar (Bottom)**
+#### **Inventory Button (Góc trên phải)**
 
-**Vị trí**: `absolute bottom-0`, full width với gradient
+**Vị trí**: `absolute top-4 right-4`
 
-**Background**: 
-- Gradient: `from-black via-black/80 to-transparent`
-- Padding: `p-6 pb-8`
-
-**Layout**:
-```
-[🎒 Inventory] [GameActions Buttons] [⚙️ Settings]
-```
-
-**Inventory Button**:
-- Size: `h-14 w-14` (56x56px)
+**Style**:
+- Size: `h-12 w-12` (48x48px)
 - Background: `zinc-800`
 - Border: `border-2 border-zinc-500`
 - Hover: `hover:bg-zinc-700 hover:border-amber-400`
-- Icon: 🎒 (backpack emoji), size: `text-2xl`
-- Badge: Red circle với số lượng items (nếu có)
-  - Position: `absolute -top-2 -right-2`
+- Icon: 🎒, size: `text-xl`
+- Badge: Red circle với số lượng items
+  - Position: `absolute -top-1 -right-1`
   - Background: `red-600`
   - Size: `w-5 h-5`
   - Font: Pixel, `text-[10px]`
-
-**GameActions Buttons**:
-- Container: `flex-1 max-w-md`
-- Buttons:
-  1. **"TIẾN VÀO BÓNG TỐI"**:
-     - Background: `zinc-800`
-     - Border: `border-2 border-zinc-600`
-     - Hover: `hover:bg-zinc-700 hover:border-amber-500`
-     - Text: White, size: `text-lg`
-     - Icon: 🕯️
-     - Cost: `(-10 Oil)` - `text-xs text-zinc-500`
-     - Particle effect: ButtonParticleEffect với color `0xffb94a`
-     - Active: `active:translate-y-1`
-     - Disabled: `opacity-50`, `cursor-not-allowed`
-
-  2. **"RESET OIL (MINT MỚI)"**:
-     - Background: `amber-700`
-     - Border: `border-2 border-amber-900`
-     - Hover: `hover:bg-amber-600`
-     - Text: White
-     - Icon: 🔄
-     - Info: `(oil=100)` - `text-xs text-amber-200/80`
-     - Particle effect: Color `0xff9500`
-
-**Settings Button**:
-- Size: `h-14 w-14`
-- Style: Giống Inventory button
-- Icon: ⚙️
 
 ### 2.5. Inventory Modal (Kho đồ)
 
@@ -559,6 +706,37 @@ Khi chưa vào game (`showGame = false`):
 - **Height**: `h-[300px]` với `overflow-y-auto`
 - **Background**: `black/40`
 
+**Rarity System**:
+- **Common** (Xám):
+  - Border: `border-zinc-500`
+  - Background: `bg-zinc-800`
+  - Text: `text-zinc-300`
+  - Glow: `shadow-[0_0_5px_rgba(161,161,170,0.3)]`
+
+- **Rare** (Xanh dương):
+  - Border: `border-blue-500`
+  - Background: `bg-blue-900/30`
+  - Text: `text-blue-300`
+  - Glow: `shadow-[0_0_10px_rgba(59,130,246,0.5)]`
+
+- **Epic** (Tím):
+  - Border: `border-purple-500`
+  - Background: `bg-purple-900/30`
+  - Text: `text-purple-300`
+  - Glow: `shadow-[0_0_15px_rgba(168,85,247,0.6)]`
+
+- **Legendary** (Cam):
+  - Border: `border-amber-500`
+  - Background: `bg-amber-900/30`
+  - Text: `text-amber-300`
+  - Glow: `shadow-[0_0_20px_rgba(245,158,11,0.8)]`
+
+- **Cursed** (Đỏ thẫm):
+  - Border: `border-red-800`
+  - Background: `bg-red-900/40`
+  - Text: `text-red-400`
+  - Glow: `shadow-[0_0_15px_rgba(127,29,29,0.6)]`
+
 **Slot States**:
 1. **Empty slot**:
    - Background: `zinc-900/50`
@@ -566,20 +744,25 @@ Khi chưa vào game (`showGame = false`):
    - Opacity: `opacity-50`
 
 2. **Filled slot**:
-   - Background: `zinc-800`
-   - Border: `border-zinc-500`
-   - Hover: `hover:border-amber-400 hover:bg-zinc-700`
-   - Icon: Item icon (emoji), size: `text-2xl`
+   - Background: Theo rarity
+   - Border: Theo rarity
+   - Hover: Border và glow tăng intensity
+   - Icon: Item icon (emoji), size: `text-2xl`, màu theo rarity
+   - **Rarity indicator**: Dot ở góc trên phải
+     - Size: `w-2 h-2`
+     - Color: Theo rarity border color
    - Tooltip: Hiện khi hover
      - Background: `black`
-     - Border: `border-white`
-     - Text: `text-[10px]`, white
+     - Border: Theo rarity
+     - Text: Màu theo rarity
+     - Font: Pixel, `text-[10px]`
+     - Content: Item name + rarity label (uppercase)
      - Position: `bottom-full mb-2`
 
 3. **Selected slot**:
-   - Border: `border-amber-400`
-   - Shadow: `shadow-[0_0_15px_rgba(245,158,11,0.5)]`
-   - Background: `zinc-700`
+   - Border: Theo rarity với intensity cao
+   - Shadow: Glow effect theo rarity
+   - Background: Sáng hơn một tone
 
 #### **Detail Panel (Right Column)**
 - **Width**: `w-1/3`
@@ -587,20 +770,29 @@ Khi chưa vào game (`showGame = false`):
 - **Padding**: `pl-4`
 
 **Content khi có item selected**:
-1. **Title**: Item name
-   - Color: `amber-500`
-   - Font: Pixel, `text-xl`
+1. **Title & Rarity Badge**:
+   - Title: Item name
+     - Color: Theo rarity (từ RARITY_COLORS)
+     - Font: Pixel, `text-xl`
+   - Rarity badge: 
+     - Background: Theo rarity bg
+     - Border: Theo rarity border
+     - Text: Uppercase rarity name
+     - Font: Pixel, `text-[10px]`
+     - Padding: `px-2 py-1`
 
 2. **Icon**: Item icon
    - Size: `text-4xl`
+   - Color: Theo rarity text color
 
 3. **Description**: 
    - Color: `zinc-400`
    - Size: `text-sm`
+   - Font: Pixel
    - `leading-relaxed`
 
 4. **Effects Section**:
-   - Label: "HIỆU ỨNG:", `text-xs`, `zinc-500`
+   - Label: "HIỆU ỨNG:", `text-xs`, `zinc-500`, Font: Pixel
    - HP: `text-red-400`
    - Oil: `text-amber-400`
    - Sanity: `text-purple-400`
@@ -611,10 +803,12 @@ Khi chưa vào game (`showGame = false`):
      - Border: `border-2 border-green-600`
      - Hover: `hover:bg-green-800`
      - Active: `active:translate-y-0.5`
+     - Font: Pixel
    - **VỨT BỎ**:
      - Background: `red-900`
      - Border: `border-2 border-red-600`
      - Hover: `hover:bg-red-800`
+     - Font: Pixel
 
 **Content khi không có item selected**:
 - Placeholder text: "Chọn một vật phẩm để xem chi tiết..."
@@ -704,10 +898,14 @@ Khi chưa vào game (`showGame = false`):
   - Glow: Tăng intensity
 
 #### **Sanity Bar**
-- **Low sanity (< 30%)**:
+- **Low sanity (< 50%)**:
   - Animation: `animate-pulse`
-  - Glitch effect: Gradient overlay với pulse
-  - Visual: Tạo cảm giác "unstable"
+  - **Glitch effect**: 
+    - Gradient overlay: `from-transparent via-white/30 to-transparent`
+    - Red flash: `bg-red-500/20` khi glitch active
+    - Text shake: `translate-x-1` khi glitch
+    - Interval: 200ms toggle
+  - Visual: Tạo cảm giác "unstable", "unreliable narrator"
 
 #### **Status Indicator**
 - **Alive**: Green (`green-400`)
@@ -869,13 +1067,19 @@ RootLayout
   - `lanternId`: string
   - `onRefresh`: () => void
   - `children`: ReactNode (game canvas)
-- **State**: `isInvOpen` (boolean)
-- **Layers**:
-  1. Children (game canvas) - z-0
-  2. GameHUD - z-30
-  3. ActionLog - z-30
-  4. InventoryModal - z-50
-  5. ActionBar - z-30
+- **State**: 
+  - `isInvOpen` (boolean)
+  - `lightLevel` (number, 0-100)
+- **3-Layer Architecture**:
+  1. **Layer 0** (z-0): Isometric game canvas (children)
+  2. **Layer 1** (z-30): HUD Overlay
+     - GameHUD (top-left)
+     - LightSlider (center-bottom)
+     - ActionConsole (bottom-right)
+     - ActionLog (above LightSlider)
+     - Inventory Button (top-right)
+  3. **Layer 2** (z-50): Modals
+     - InventoryModal
 
 #### **GameHUD.tsx**
 - **Role**: Hiển thị player stats (HP, Oil, Sanity)
@@ -892,11 +1096,15 @@ RootLayout
   - Compass
 
 #### **InventoryModal.tsx**
-- **Role**: Modal hiển thị và quản lý items
+- **Role**: Modal hiển thị và quản lý items với rarity system
 - **Grid**: 5x4 (20 slots)
 - **Features**: 
-  - Item selection
-  - Detail panel
+  - **Rarity System**: Common, Rare, Epic, Legendary, Cursed
+  - Rarity-colored borders, backgrounds, và glows
+  - Rarity indicator dot trên mỗi slot
+  - Tooltip hiển thị rarity khi hover
+  - Item selection với rarity highlight
+  - Detail panel với rarity badge
   - Use/Drop actions
   - Currency display
 
@@ -917,10 +1125,25 @@ RootLayout
   - Log integration
   - Particle effects
 
-#### **ActionButtons.tsx**
-- **Role**: Quick action buttons (Move, Attack, Interact, Inventory)
+#### **LightSlider.tsx**
+- **Role**: Điều chỉnh độ sáng đèn lồng (cơ chế cốt lõi)
+- **Position**: Center-bottom (above ActionConsole)
+- **Features**:
+  - 3 modes: Stealth (0-30%), Normal (31-70%), Truth (71-100%)
+  - Real-time consumption rate display
+  - Visual brightness filter cho toàn màn hình
+  - Mode-specific icons và colors
+  - Liquid animation cho Truth mode
+
+#### **ActionConsole.tsx**
+- **Role**: RPG-style action console với log window
 - **Position**: Bottom-right
-- **Style**: Large, circular/square buttons
+- **Features**:
+  - Action buttons grid (Move, Rest, Search, Attack)
+  - Special actions (Focus Light, Whisper)
+  - Integrated log window (terminal-style)
+  - Disabled states với visual feedback
+  - Auto-scroll log
 
 #### **MirrorHallwayGame.tsx**
 - **Role**: Isometric game canvas với PixiJS
@@ -1006,6 +1229,18 @@ RootLayout
 #### **pulse**
 - **Built-in Tailwind**: `animate-pulse`
 - **Use**: Low oil warning, low sanity glitch
+
+#### **glitch**
+- **Duration**: 0.3s
+- **Easing**: Infinite
+- **Effect**: Random translate offsets (-2px to 2px)
+- **Use**: Low sanity visual feedback
+
+#### **shake**
+- **Duration**: 0.5s
+- **Easing**: Infinite
+- **Effect**: Horizontal shake (-2px to 2px)
+- **Use**: Unstable states, low sanity
 
 #### **shootingStar**
 - **Duration**: 1.5s
@@ -1135,6 +1370,11 @@ RootLayout
 ## 10. FUTURE ENHANCEMENTS
 
 ### 10.1. Planned Features
+- [x] Light Slider với 3 chế độ (Stealth/Normal/Truth) ✅
+- [x] Action Console với RPG-style interface ✅
+- [x] GameHUD với liquid effects và glitch ✅
+- [x] Inventory với rarity system ✅
+- [x] 3-layer architecture ✅
 - [ ] Map system với room exploration
 - [ ] Combat system UI
 - [ ] Character customization
@@ -1143,6 +1383,9 @@ RootLayout
 - [ ] More particle effects
 - [ ] Screen shake effects
 - [ ] Damage numbers popup
+- [ ] Light level persistence (blockchain integration)
+- [ ] Oil consumption real-time calculation
+- [ ] Sanity drain real-time calculation
 
 ### 10.2. UI Improvements
 - [ ] Better mobile experience
@@ -1167,7 +1410,14 @@ Tất cả elements được thiết kế để tạo một trải nghiệm game
 
 ---
 
-**Document Version**: 1.0  
+**Document Version**: 2.0  
 **Last Updated**: 2024  
-**Author**: UI/UX Analysis from Codebase
+**Author**: UI/UX Analysis from Codebase  
+**Major Updates**:
+- ✅ Added LightSlider component (Stealth/Normal/Truth modes)
+- ✅ Added ActionConsole component (RPG-style)
+- ✅ Enhanced GameHUD (liquid effects, glitch, pixel avatar)
+- ✅ Added Rarity System to Inventory (Common/Rare/Epic/Legendary/Cursed)
+- ✅ Implemented 3-layer architecture (Layer 0: Canvas, Layer 1: HUD, Layer 2: Modals)
+- ✅ Added glitch and shake animations
 
