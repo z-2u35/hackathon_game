@@ -1,0 +1,10 @@
+{
+  "frameCount": 8,
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "rows": 1,
+  "cols": 8,
+  "totalWidth": 512,
+  "totalHeight": 64,
+  "style": "GBA Pokémon Gen 3"
+}

@@ -1,0 +1,7 @@
+{
+  "width": 64,
+  "height": 32,
+  "type": "placeholder",
+  "note": "Replace with actual GBA-style pixel art asset",
+  "style": "GBA Pokémon Gen 3"
+}

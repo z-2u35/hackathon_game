@@ -1,0 +1,6 @@
+{
+  "width": 128,
+  "height": 128,
+  "type": "placeholder",
+  "note": "Replace with actual asset"
+}

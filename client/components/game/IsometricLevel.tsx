@@ -375,50 +375,102 @@ export default function IsometricLevel({
     });
 
     // ============================================
-    // VẼ NHÂN VẬT (Player Sprite) - CẢI THIỆN
+    // VẼ NHÂN VẬT (Player Sprite) - SỬ DỤNG SPRITE SHEET
     // ============================================
-    const playerSprite = new PIXI.Graphics();
-    
-    // Body (robe/cloak)
-    playerSprite.beginFill(0x2a1a0f);
-    playerSprite.lineStyle(2, 0x1a0f08, 1);
-    playerSprite.drawRect(-8, -TILE_HEIGHT / 2 + 10, 16, TILE_HEIGHT / 2 + 2);
-    playerSprite.endFill();
-    
-    // Head
-    playerSprite.beginFill(0xffb94a);
-    playerSprite.lineStyle(2, 0xff9500, 1);
-    playerSprite.drawCircle(0, -TILE_HEIGHT / 2, 8);
-    playerSprite.endFill();
-    
-    // Face (simple eyes)
-    playerSprite.beginFill(0x1a0f08);
-    playerSprite.drawCircle(-2, -TILE_HEIGHT / 2 - 1, 1);
-    playerSprite.drawCircle(2, -TILE_HEIGHT / 2 - 1, 1);
-    playerSprite.endFill();
-    
-    // Lantern (held in hand)
-    playerSprite.beginFill(0xffb94a, 0.8);
-    playerSprite.lineStyle(1, 0xff9500, 1);
-    playerSprite.drawCircle(10, -TILE_HEIGHT / 2 + 5, 4);
-    playerSprite.endFill();
-    
-    // Lantern glow
-    playerSprite.beginFill(0xffb94a, 0.3);
-    playerSprite.drawCircle(10, -TILE_HEIGHT / 2 + 5, 6);
-    playerSprite.endFill();
-    
-    // Cloak highlight
-    playerSprite.lineStyle(1, 0x3a2a1f, 0.5);
-    playerSprite.moveTo(-8, -TILE_HEIGHT / 2 + 10);
-    playerSprite.lineTo(0, -TILE_HEIGHT / 2 + 8);
-    playerSprite.lineTo(8, -TILE_HEIGHT / 2 + 10);
+    let playerSprite: PIXI.AnimatedSprite | PIXI.Graphics | null = null;
+    let playerDirection: 'down' | 'up' | 'left' | 'right' = 'down';
+    let playerAnimation: 'idle' | 'walk' = 'idle';
+
+    // Load player sprite sheet
+    const loadPlayerSprite = async () => {
+      try {
+        // Import asset loader
+        const { loadSpriteSheetFromMeta, createAnimatedSprite, ASSET_PATHS } = await import('@/utils/assetLoader');
+        
+        const { textures, meta } = await loadSpriteSheetFromMeta(
+          ASSET_PATHS.characters.player.mainSheet
+        );
+
+        // Kiểm tra xem có textures không
+        if (textures.length === 0) {
+          console.warn('⚠️ No textures loaded, sprite sheet may not exist. Using fallback Graphics.');
+          throw new Error('No textures loaded - sprite sheet not found or invalid');
+        }
+
+        // Calculate frame indices based on direction and animation
+        const directionMap = { down: 0, up: 1, left: 2, right: 3 };
+        const animationMap = { idle: 0, walk: 1 };
+        
+        const baseFrame = directionMap[playerDirection] * 4 + animationMap[playerAnimation] * 16;
+        const frames = textures.slice(baseFrame, baseFrame + 4);
+
+        if (frames.length === 0) {
+          console.warn('⚠️ No frames for animation, using fallback.');
+          throw new Error('No frames for animation');
+        }
+
+        const sprite = createAnimatedSprite(frames, 0.15);
+        sprite.anchor.set(0.5);
+        sprite.x = 0;
+        sprite.y = 0;
+        sprite.zIndex = 10;
+        sprite.play();
+
+        isoWorld.addChild(sprite);
+        playerSprite = sprite;
+        updatePlayerPosition();
+        console.log('✅ Player sprite loaded successfully');
+      } catch (error) {
+        console.warn('⚠️ Error loading player sprite, using fallback Graphics:', error);
+        // Fallback: vẽ bằng Graphics nếu không load được sprite
+        const fallbackSprite = new PIXI.Graphics();
+        
+        // Vẽ nhân vật đơn giản (hình chữ nhật với đầu tròn)
+        fallbackSprite.beginFill(0xffb94a); // Yellow/amber
+        fallbackSprite.lineStyle(2, 0xff9500, 1);
+        fallbackSprite.drawCircle(0, -TILE_HEIGHT / 2, 8); // Head
+        fallbackSprite.drawRect(-6, -TILE_HEIGHT / 2 + 8, 12, TILE_HEIGHT / 2); // Body
+        fallbackSprite.endFill();
+
+        // Áo choàng
+        fallbackSprite.beginFill(0x1a1a1a); // Dark cloak
+        fallbackSprite.drawPolygon([
+          -10, TILE_HEIGHT / 2 + 5,
+          10, TILE_HEIGHT / 2 + 5,
+          5, TILE_HEIGHT / 2 + 15,
+          -5, TILE_HEIGHT / 2 + 15,
+        ]);
+        fallbackSprite.endFill();
+
+        // Mắt
+        fallbackSprite.beginFill(0x000000);
+        fallbackSprite.drawRect(-4, -TILE_HEIGHT / 2 - 2, 2, 2);
+        fallbackSprite.drawRect(2, -TILE_HEIGHT / 2 - 2, 2, 2);
+        fallbackSprite.endFill();
+
+        // Đèn lồng (đơn giản)
+        fallbackSprite.beginFill(0xffb94a);
+        fallbackSprite.drawRect(8, -TILE_HEIGHT / 2 + 5, 4, 8);
+        fallbackSprite.endFill();
+
+        fallbackSprite.zIndex = 10;
+        isoWorld.addChild(fallbackSprite);
+        playerSprite = fallbackSprite;
+        updatePlayerPosition();
+      }
+    };
+
+    loadPlayerSprite();
 
     const updatePlayerPosition = () => {
       const isoPos = toIso(playerPosRef.current.x, playerPosRef.current.y);
-      playerSprite.x = isoPos.x;
-      playerSprite.y = isoPos.y;
-      playerSprite.zIndex = 10; // Luôn ở trên cùng
+      if (playerSprite) {
+        playerSprite.x = isoPos.x;
+        playerSprite.y = isoPos.y;
+        if (playerSprite instanceof PIXI.DisplayObject) {
+          playerSprite.zIndex = 10; // Luôn ở trên cùng
+        }
+      }
       
       // Update glow position (glowCircle được khai báo sau)
       if (glowCircle) {
@@ -455,29 +507,42 @@ export default function IsometricLevel({
       glowCircle.y = isoPos.y;
     };
 
-    // Add player sprite to world
-    isoWorld.addChild(playerSprite);
-    
     // Initial position update (sau khi glowCircle và updateLighting đã được tạo)
+    // playerSprite sẽ được add vào world trong loadPlayerSprite()
     updatePlayerPosition();
     updateLighting();
 
     // ============================================
-    // ANIMATION - Player bobbing
+    // ANIMATION - Player bobbing (chỉ khi idle)
     // ============================================
     let bobOffset = 0;
     let bobDirection = 1;
     app.ticker.add(() => {
-      // Bobbing animation khi đứng yên
-      if (!isMovingRef.current) {
+      const isoPos = toIso(playerPosRef.current.x, playerPosRef.current.y);
+      
+      // Bobbing animation khi đứng yên (idle)
+      if (!isMovingRef.current && playerAnimation === 'idle') {
         bobOffset += bobDirection * 0.2;
         if (bobOffset > 3) bobDirection = -1;
         if (bobOffset < -3) bobDirection = 1;
-        const isoPos = toIso(playerPosRef.current.x, playerPosRef.current.y);
-        playerSprite.y = isoPos.y + bobOffset;
+        
+        if (playerSprite) {
+          const currentY = playerSprite.y;
+          playerSprite.y = isoPos.y + bobOffset;
+        }
+        
         // Update glow position too
         if (glowCircle) {
           glowCircle.y = isoPos.y + bobOffset;
+        }
+      } else {
+        // Reset bob offset khi đang di chuyển
+        bobOffset = 0;
+        if (playerSprite) {
+          playerSprite.y = isoPos.y;
+        }
+        if (glowCircle) {
+          glowCircle.y = isoPos.y;
         }
       }
       
@@ -486,7 +551,6 @@ export default function IsometricLevel({
       const glowRadius = 20 + intensity * 30;
       const glowAlpha = 0.2 + intensity * 0.3;
       if (glowCircle) {
-        const isoPos = toIso(playerPosRef.current.x, playerPosRef.current.y);
         glowCircle.x = isoPos.x;
         glowCircle.y = isoPos.y + bobOffset;
         glowCircle.clear();
@@ -513,12 +577,20 @@ export default function IsometricLevel({
 
       // Movement (WASD or Arrow keys)
       if ((key === "w" || key === "arrowup") && !isMovingRef.current) {
+        playerDirection = 'up';
+        playerAnimation = 'walk';
         movePlayer(0, -1);
       } else if ((key === "s" || key === "arrowdown") && !isMovingRef.current) {
+        playerDirection = 'down';
+        playerAnimation = 'walk';
         movePlayer(0, 1);
       } else if ((key === "a" || key === "arrowleft") && !isMovingRef.current) {
+        playerDirection = 'left';
+        playerAnimation = 'walk';
         movePlayer(-1, 0);
       } else if ((key === "d" || key === "arrowright") && !isMovingRef.current) {
+        playerDirection = 'right';
+        playerAnimation = 'walk';
         movePlayer(1, 0);
       }
 
@@ -555,15 +627,19 @@ export default function IsometricLevel({
         const progress = Math.min(elapsed / duration, 1);
         const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
 
-        playerSprite.x = startPos.x + (endPos.x - startPos.x) * easeProgress;
-        playerSprite.y = startPos.y + (endPos.y - startPos.y) * easeProgress + bobOffset;
+        if (playerSprite) {
+          playerSprite.x = startPos.x + (endPos.x - startPos.x) * easeProgress;
+          playerSprite.y = startPos.y + (endPos.y - startPos.y) * easeProgress + bobOffset;
+        }
 
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           isMovingRef.current = false;
+          playerAnimation = 'idle'; // Chuyển về idle khi dừng
           updatePlayerPosition();
           updateLighting(); // Update glow position
+          updatePlayerSpriteAnimation(); // Update sprite animation
 
           // Check for interactable objects
           checkInteractables();
@@ -585,6 +661,34 @@ export default function IsometricLevel({
       } else {
         setInteractObject(null);
         setShowInteractPrompt(false);
+      }
+    };
+
+    // Update player sprite animation khi direction/animation thay đổi
+    const updatePlayerSpriteAnimation = async () => {
+      if (!playerSprite || !(playerSprite instanceof PIXI.AnimatedSprite)) return;
+
+      try {
+        const { loadSpriteSheetFromMeta, ASSET_PATHS } = await import('@/utils/assetLoader');
+        
+        const { textures } = await loadSpriteSheetFromMeta(
+          ASSET_PATHS.characters.player.mainSheet
+        );
+
+        if (textures.length === 0) return;
+
+        const directionMap = { down: 0, up: 1, left: 2, right: 3 };
+        const animationMap = { idle: 0, walk: 1 };
+        
+        const baseFrame = directionMap[playerDirection] * 4 + animationMap[playerAnimation] * 16;
+        const frames = textures.slice(baseFrame, baseFrame + 4);
+
+        if (frames.length > 0) {
+          playerSprite.textures = frames;
+          playerSprite.play();
+        }
+      } catch (error) {
+        console.error('Error updating player sprite animation:', error);
       }
     };
 
