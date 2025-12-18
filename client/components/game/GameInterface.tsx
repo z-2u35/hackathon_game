@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import GameHUD from "./GameHUD";
 import InventoryModal, { GameItem } from "./InventoryModal";
 import ActionConsole from "./ActionConsole";
 import LightSlider from "./LightSlider";
 import ActionLog from "./ActionLog";
 import TopDownLevel from "./TopDownLevel";
-import DialogueBox from "./DialogueBox";
+import ItemNotificationPopup from "./ItemNotificationPopup";
+import StoryEventPopup from "./StoryEventPopup";
+// DialogueBox disabled - không sử dụng nữa
+// import DialogueBox from "./DialogueBox";
 import { addGameLog } from "./ActionLog";
 import { usePlayerStats } from "@/hook/usePlayerStats";
 
@@ -33,59 +36,128 @@ export default function GameInterface({
 }: GameInterfaceProps) {
   const [isInvOpen, setInvOpen] = useState(false);
   const [lightLevel, setLightLevel] = useState(50); // Default 50%
-  const [dialogue, setDialogue] = useState<{
-    text: string;
-    speaker?: string;
-    choices?: Array<{ id: number; text: string }>;
-  } | null>(null);
+  // Dialogue state disabled
+  // const [dialogue, setDialogue] = useState<{
+  //   text: string;
+  //   speaker?: string;
+  //   choices?: Array<{ id: number; text: string }>;
+  // } | null>(null);
   const [playerPosition, setPlayerPosition] = useState({ x: 1, y: 1 });
+  const [itemNotification, setItemNotification] = useState<{
+    name: string;
+    icon?: string;
+    description?: string;
+    rarity?: "common" | "rare" | "epic" | "legendary" | "cursed";
+  } | null>(null);
+  
+  const [storyEvent, setStoryEvent] = useState<{
+    title: string;
+    description: string;
+    icon?: string;
+    effect?: string;
+    type?: "info" | "warning" | "success" | "error" | "story";
+  } | null>(null);
+  
+  // Story progression state cho Màn 1: Hành lang Gương
+  const [storyProgress, setStoryProgress] = useState({
+    hasSeenFirstMirror: false,
+    hasFoundCorpse: false,
+    hasOldKey: false,
+    hasOpenedDoor: false,
+    mirrorsInteracted: 0,
+  });
+  
   const playerStats = usePlayerStats();
+
+  // Local state cho oil và sanity để có thể update theo thời gian
+  const [localOil, setLocalOil] = useState<number | null>(null);
+  const [localSanity, setLocalSanity] = useState<number | null>(null);
+  const lastOilWarningRef = useRef<number>(0); // Track last oil warning time
 
   // Sử dụng props nếu có, không thì lấy từ hook
   const lanternId = propLanternId ?? playerStats.lanternObjects[0]?.data?.objectId ?? "";
-  const currentOil = stats?.oil ?? playerStats.oil ?? 0;
-  const currentHealth = stats?.health ?? playerStats.hp ?? 100;
-  const currentSanity = stats?.sanity ?? playerStats.sanity ?? 0;
+  const baseOil = stats?.oil ?? playerStats.oil ?? 0;
+  const baseHealth = stats?.health ?? playerStats.hp ?? 100;
+  const baseSanity = stats?.sanity ?? playerStats.sanity ?? 0;
 
-  // Mock inventory với rarity examples
-  const defaultInventory: GameItem[] = inventory.length > 0 ? inventory : [
-    {
-      id: "1",
-      name: "Blade of Scourge",
-      icon: "⚔️",
-      description: "Lưỡi kiếm bị nguyền rủa, sắc bén nhưng hao tổn Sanity.",
-      type: "weapon",
-      rarity: "cursed",
-      effect: { sanity: -5 },
-    },
-    {
-      id: "2",
-      name: "Lens of Truth",
-      icon: "🔍",
-      description: "Kính thần giúp nhìn thấy sự thật ẩn giấu.",
-      type: "tool",
-      rarity: "legendary",
-      effect: { sanity: -10 },
-    },
-    {
-      id: "3",
-      name: "Sanity Pill",
-      icon: "💊",
-      description: "Viên thuốc hồi phục tinh thần.",
-      type: "consumable",
-      rarity: "rare",
-      effect: { sanity: 20 },
-    },
-    {
-      id: "4",
-      name: "Wyrm Oil",
-      icon: "🛢️",
-      description: "Dầu từ xác rồng, hồi phục đèn lồng.",
-      type: "consumable",
-      rarity: "epic",
-      effect: { oil: 30 },
-    },
-  ];
+  // Use local state if available, otherwise use base values
+  const currentOil = localOil !== null ? localOil : baseOil;
+  const currentHealth = baseHealth;
+  const currentSanity = localSanity !== null ? localSanity : baseSanity;
+
+  // Sync local state khi props/stats thay đổi (nhưng chỉ khi local state chưa được set)
+  useEffect(() => {
+    if (localOil === null) setLocalOil(baseOil);
+    if (localSanity === null) setLocalSanity(baseSanity);
+  }, [baseOil, baseSanity, localOil, localSanity]);
+
+  // Calculate consumption rates based on light level
+  const getOilConsumptionRate = (level: number) => {
+    if (level <= 30) return 0.5; // Stealth: 50% consumption
+    if (level <= 70) return 1.0; // Normal: 100% consumption
+    return 2.0; // Truth: 200% consumption
+  };
+
+  const getSanityDrainRate = (level: number) => {
+    if (level > 70) return 1.5; // Truth: 150% drain
+    return 1.0; // Normal drain
+  };
+
+  // Oil and Sanity consumption over time
+  useEffect(() => {
+    const consumptionRate = getOilConsumptionRate(lightLevel);
+    const drainRate = getSanityDrainRate(lightLevel);
+    
+    // Oil consumption: 1 point every 2 seconds * consumption rate
+    const oilInterval = setInterval(() => {
+      setLocalOil((prev) => {
+        if (prev === null || prev <= 0) return prev; // Stop if already empty
+        const newOil = Math.max(0, prev - (consumptionRate * 0.5));
+        
+        // Warning khi oil thấp
+        if (newOil < 20 && prev >= 20 && Date.now() - lastOilWarningRef.current > 5000) {
+          addGameLog('<span class="text-red-400">⚠️ Dầu sắp cạn! Hãy tắt đèn hoặc tìm dầu.</span>', "warning");
+          lastOilWarningRef.current = Date.now();
+        }
+        
+        // Oil hết
+        if (newOil <= 0 && prev > 0) {
+          addGameLog('<span class="text-red-400">🕯️ Đèn đã tắt! Bạn đang ở trong bóng tối...</span>', "error");
+        }
+        
+        return newOil;
+      });
+
+      // Sanity drain: 0.5 point every 2 seconds * drain rate (chỉ khi ở Truth mode)
+      if (lightLevel > 70) {
+        setLocalSanity((prev) => {
+          if (prev === null || prev <= 0) return prev;
+          return Math.max(0, prev - (drainRate * 0.25));
+        });
+      }
+    }, 2000); // Update every 2 seconds
+
+    return () => clearInterval(oilInterval);
+  }, [lightLevel, baseOil, baseSanity]);
+
+  // Reset local oil/sanity when base values change significantly (e.g., from blockchain update)
+  useEffect(() => {
+    if (Math.abs(baseOil - (localOil ?? baseOil)) > 10) {
+      setLocalOil(baseOil);
+    }
+    if (Math.abs(baseSanity - (localSanity ?? baseSanity)) > 10) {
+      setLocalSanity(baseSanity);
+    }
+  }, [baseOil, baseSanity]);
+
+  // Dynamic inventory - start with empty, add items as player collects them
+  const [collectedItems, setCollectedItems] = useState<GameItem[]>([]);
+  
+  const defaultInventory: GameItem[] = inventory.length > 0 
+    ? inventory 
+    : collectedItems.length > 0 
+      ? collectedItems 
+      : [];
 
   const addLog = (msg: string, type?: "info" | "warning" | "success" | "error") => {
     addGameLog(msg, type || "info");
@@ -129,43 +201,147 @@ export default function GameInterface({
     // TODO: Implement whisper logic
   };
 
-  // Handle interaction với game objects
+  // Handle interaction với game objects - Story progression + Item notifications
   const handleInteract = (objectType: string, gridX: number, gridY: number) => {
     switch (objectType) {
       case "mirror":
-        setDialogue({
-          text: "Ngươi nhìn vào gương... khuôn mặt không phải của ngươi. Một cảm giác lạnh lẽo chạy dọc sống lưng.",
-          speaker: "Gương Vỡ",
-        });
-        addLog('<span class="text-purple-400">👁️ Nhận được: +5 Sanity (nhưng cảm thấy bất an...)</span>', "info");
-        // TODO: Update stats
+        setStoryProgress((prev) => ({
+          ...prev,
+          mirrorsInteracted: prev.mirrorsInteracted + 1,
+          hasSeenFirstMirror: true,
+        }));
+        
+        // First mirror - Story introduction
+        if (storyProgress.mirrorsInteracted === 0) {
+          addLog('<span class="text-purple-400">🪞 Bạn nhìn vào gương vỡ... Khuôn mặt trong gương không phải của bạn. Một cảm giác lạnh lẽo chạy dọc sống lưng.</span>', "info");
+          addLog('<span class="text-purple-400">👁️ +5 Sanity (nhưng cảm thấy bất an...)</span>', "info");
+          
+          // Update sanity
+          setLocalSanity((prev) => Math.min(100, (prev ?? baseSanity) + 5));
+        } else {
+          // Subsequent mirrors - More disturbing
+          addLog('<span class="text-purple-400">🪞 Gương lại... Hình ảnh phản chiếu vẫn không khớp. Bạn nghe thấy tiếng thì thầm từ phía sau...</span>', "warning");
+          addLog('<span class="text-purple-400">👁️ +3 Sanity</span>', "info");
+          setLocalSanity((prev) => Math.min(100, (prev ?? baseSanity) + 3));
+        }
         break;
 
       case "corpse":
-        setDialogue({
-          text: "Một xác chết khô héo. Trong tay hắn có một chiếc chìa khóa cũ kỹ.",
-          speaker: "Xác Chết",
-          choices: [
-            { id: 1, text: "Nhặt chìa khóa" },
-            { id: 2, text: "Bỏ qua" },
-          ],
-        });
+        if (!storyProgress.hasFoundCorpse) {
+          setStoryProgress((prev) => ({ ...prev, hasFoundCorpse: true }));
+          
+          // Show story popup first
+          setStoryEvent({
+            title: "Xác Chết",
+            description: "Một xác chết khô héo nằm trên nền đá lạnh. Trong tay hắn có một chiếc chìa khóa cũ kỹ, rỉ sét.",
+            icon: "💀",
+            effect: "Tìm thấy chìa khóa",
+            type: "info",
+          });
+          
+          addLog('<span class="text-zinc-400">💀 Một xác chết khô héo nằm trên nền đá lạnh. Trong tay hắn có một chiếc chìa khóa cũ kỹ, rỉ sét.</span>', "info");
+          
+          // Add Old Key to inventory after a short delay
+          setTimeout(() => {
+            const oldKeyItem: GameItem = {
+              id: "old-key-" + Date.now(),
+              name: "Old Key",
+              icon: "🔑",
+              description: "Chiếc chìa khóa cổ kính, có thể mở cánh cửa cuối hành lang.",
+              type: "tool",
+              rarity: "common",
+              effect: {},
+            };
+            
+            setCollectedItems((prev) => [...prev, oldKeyItem]);
+            setStoryProgress((prev) => ({ ...prev, hasOldKey: true }));
+            
+            // Show item notification popup
+            setItemNotification({
+              name: "Old Key",
+              icon: "🔑",
+              description: "Chiếc chìa khóa cổ kính, có thể mở cánh cửa cuối hành lang.",
+              rarity: "common",
+            });
+            
+            addLog('<span class="text-green-400">🔑 Nhặt được: Old Key</span>', "success");
+          }, 1500);
+        } else {
+          setStoryEvent({
+            title: "Xác Chết",
+            description: "Xác chết vẫn nằm đó, im lặng...",
+            icon: "💀",
+            type: "info",
+          });
+          addLog('<span class="text-zinc-400">💀 Xác chết vẫn nằm đó, im lặng...</span>', "info");
+        }
         break;
 
       case "door":
-        if (inventory.some((item) => item.name === "Old Key")) {
-          setDialogue({
-            text: "Cửa mở ra... Bạn đã vượt qua Hành lang Gương!",
-            speaker: "Cửa",
-          });
-          addLog('<span class="text-green-400">✨ Đã hoàn thành Màn 1!</span>', "success");
-          // TODO: Next level logic
+        const hasKey = storyProgress.hasOldKey || defaultInventory.some((item) => item.name === "Old Key");
+        if (hasKey) {
+          if (!storyProgress.hasOpenedDoor) {
+            setStoryProgress((prev) => ({ ...prev, hasOpenedDoor: true }));
+            
+            // Show door opening story popup
+            setStoryEvent({
+              title: "Cửa Mở Ra",
+              description: "Bạn đưa chìa khóa vào ổ khóa... Cửa từ từ mở ra với tiếng kẽo kẹt. Ánh sáng phía trước rọi vào hành lang tối tăm.",
+              icon: "🚪",
+              effect: "Màn 1 hoàn thành!",
+              type: "success",
+            });
+            
+            addLog('<span class="text-green-400">🔑 Bạn đưa chìa khóa vào ổ khóa... Cửa từ từ mở ra với tiếng kẽo kẹt.</span>', "success");
+            
+            // Show completion notification after door popup
+            setTimeout(() => {
+              setStoryEvent({
+                title: "✨ Màn 1 Hoàn Thành!",
+                description: "Bạn đã vượt qua Hành lang Gương. Ánh sáng phía trước đang chờ đợi...",
+                icon: "✨",
+                effect: "Câu chuyện tiếp tục ở Màn 2...",
+                type: "success",
+              });
+            }, 4500);
+            
+            setTimeout(() => {
+              addLog('<span class="text-green-400">🚪 Cửa mở ra... Ánh sáng phía trước rọi vào hành lang tối tăm.</span>', "success");
+              addLog('<span class="text-amber-400">✨ Đã hoàn thành Màn 1: Hành lang Gương!</span>', "success");
+              addLog('<span class="text-zinc-300">📖 Câu chuyện tiếp tục ở Màn 2...</span>', "info");
+            }, 2000);
+          } else {
+            setStoryEvent({
+              title: "Cửa Đã Mở",
+              description: "Cửa đã mở. Bạn có thể bước vào...",
+              icon: "🚪",
+              type: "info",
+            });
+            addLog('<span class="text-green-400">🚪 Cửa đã mở. Bạn có thể bước vào...</span>', "info");
+          }
         } else {
-          setDialogue({
-            text: "Cửa bị khóa. Bạn cần một chiếc chìa khóa để mở.",
-            speaker: "Cửa",
+          setStoryEvent({
+            title: "Cửa Bị Khóa",
+            description: "Cửa bị khóa chặt. Bạn cần một chiếc chìa khóa để mở.",
+            icon: "🔒",
+            effect: "Tìm chìa khóa trong hành lang",
+            type: "warning",
           });
+          addLog('<span class="text-red-400">🔒 Cửa bị khóa chặt. Bạn cần một chiếc chìa khóa để mở.</span>', "warning");
+          addLog('<span class="text-zinc-400">💡 Gợi ý: Tìm kiếm trong hành lang, có thể có ai đó đã để lại chìa khóa...</span>', "info");
         }
+        break;
+
+      case "chest":
+        setStoryEvent({
+          title: "Rương Cổ",
+          description: "Bạn tìm thấy một chiếc rương cổ. Có vẻ như nó đã bị khóa từ lâu...",
+          icon: "📦",
+          effect: "Cần chìa khóa để mở",
+          type: "info",
+        });
+        addLog('<span class="text-amber-400">📦 Bạn tìm thấy một chiếc rương cổ. Có vẻ như nó đã bị khóa từ lâu...</span>', "info");
+        // TODO: Add chest interaction logic
         break;
 
       default:
@@ -173,16 +349,16 @@ export default function GameInterface({
     }
   };
 
-  // Handle dialogue choice
-  const handleDialogueChoice = (choiceId: number) => {
-    if (dialogue?.text.includes("chìa khóa")) {
-      if (choiceId === 1) {
-        addLog('<span class="text-green-400">🔑 Nhặt được: Old Key</span>', "success");
-        // TODO: Add item to inventory
-      }
-    }
-    setDialogue(null);
-  };
+  // Handle dialogue choice - Disabled
+  // const handleDialogueChoice = (choiceId: number) => {
+  //   if (dialogue?.text.includes("chìa khóa")) {
+  //     if (choiceId === 1) {
+  //       addLog('<span class="text-green-400">🔑 Nhặt được: Old Key</span>', "success");
+  //       // TODO: Add item to inventory
+  //     }
+  //   }
+  //   setDialogue(null);
+  // };
 
   // Handle player movement
   const handlePlayerMove = (x: number, y: number) => {
@@ -191,7 +367,13 @@ export default function GameInterface({
   };
 
   return (
-    <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" style={{ touchAction: 'none' }}>
+    <div 
+      className="absolute inset-0 z-[5] pointer-events-none overflow-hidden" 
+      style={{ 
+        touchAction: 'none',
+        overscrollBehavior: 'none'
+      }}
+    >
       {/* ============================================ */}
       {/* LAYER 0: Top-Down Game Canvas (Dưới cùng) */}
       {/* ============================================ */}
@@ -219,13 +401,18 @@ export default function GameInterface({
         lanternId={lanternId}
       />
 
-      {/* Light Slider - Góc dưới giữa */}
+      {/* Light Slider - Bottom center (above ActionConsole) */}
       <LightSlider
         lightLevel={lightLevel}
         onLightChange={setLightLevel}
         oil={currentOil}
         sanity={currentSanity}
       />
+
+      {/* Action Log - Bottom left (Position tracking & game events) */}
+      <div className="absolute bottom-4 left-4 pointer-events-auto z-30" style={{ maxWidth: 'calc(50% - 8px)' }}>
+        <ActionLog playerPosition={playerPosition} />
+      </div>
 
       {/* Action Console - Góc dưới phải */}
       <ActionConsole
@@ -240,11 +427,8 @@ export default function GameInterface({
         sanity={currentSanity}
       />
 
-      {/* Action Log - Center bottom (above LightSlider) */}
-      <ActionLog />
-
-      {/* Dialogue Box - Bottom (Layer 2) */}
-      {dialogue && (
+      {/* Dialogue Box - Disabled */}
+      {/* {dialogue && (
         <DialogueBox
           text={dialogue.text}
           speaker={dialogue.speaker}
@@ -252,7 +436,7 @@ export default function GameInterface({
           onClose={() => setDialogue(null)}
           onChoice={handleDialogueChoice}
         />
-      )}
+      )} */}
 
       {/* ============================================ */}
       {/* LAYER 2: Modals (Popup giữa màn hình) */}
@@ -279,7 +463,7 @@ export default function GameInterface({
       {/* Inventory Button - Floating (không nằm trong ActionConsole) */}
       <button
         onClick={() => setInvOpen(true)}
-        className="absolute top-4 right-4 h-12 w-12 bg-zinc-800 border-2 border-zinc-500 rounded hover:bg-zinc-700 hover:border-amber-400 active:scale-95 transition-all flex items-center justify-center relative group pointer-events-auto z-30"
+        className="absolute top-20 right-4 h-12 w-12 bg-zinc-800 border-2 border-zinc-500 rounded hover:bg-zinc-700 hover:border-amber-400 active:scale-95 transition-all flex items-center justify-center relative group pointer-events-auto z-40"
       >
         <span className="text-xl">🎒</span>
         {defaultInventory.length > 0 && (
@@ -288,6 +472,18 @@ export default function GameInterface({
           </span>
         )}
       </button>
+
+      {/* Item Notification Popup */}
+      <ItemNotificationPopup
+        item={itemNotification}
+        onClose={() => setItemNotification(null)}
+      />
+
+      {/* Story Event Popup */}
+      <StoryEventPopup
+        event={storyEvent}
+        onClose={() => setStoryEvent(null)}
+      />
     </div>
   );
 }

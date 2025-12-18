@@ -190,6 +190,61 @@ export const ASSET_PATHS = {
     player: {
       mainSheet: '/assets/characters/player/spr_seeker_sheet.png',
       actionSheet: '/assets/characters/player/spr_seeker_action_sheet.png',
+      // Individual frames for animation
+      idleDown: '/assets/characters/player/spr_seeker_idle_down_1.png',
+      idleDownFrames: [
+        '/assets/characters/player/spr_seeker_idle_down_1.png',
+        '/assets/characters/player/spr_seeker_idle_down_2.png',
+        '/assets/characters/player/spr_seeker_idle_down_3.png',
+        '/assets/characters/player/spr_seeker_idle_down_4.png',
+      ],
+      idleUp: '/assets/characters/player/spr_seeker_idle_up_1.png',
+      idleUpFrames: [
+        '/assets/characters/player/spr_seeker_idle_up_1.png',
+        '/assets/characters/player/spr_seeker_idle_up_2.png',
+        '/assets/characters/player/spr_seeker_idle_up_3.png',
+        '/assets/characters/player/spr_seeker_idle_up_4.png',
+      ],
+      idleLeft: '/assets/characters/player/spr_seeker_idle_left_1.png',
+      idleLeftFrames: [
+        '/assets/characters/player/spr_seeker_idle_left_1.png',
+        '/assets/characters/player/spr_seeker_idle_left_2.png',
+        '/assets/characters/player/spr_seeker_idle_left_3.png',
+        '/assets/characters/player/spr_seeker_idle_left_4.png',
+      ],
+      idleRight: '/assets/characters/player/spr_seeker_idle_right_1.png',
+      idleRightFrames: [
+        '/assets/characters/player/spr_seeker_idle_right_1.png',
+        '/assets/characters/player/spr_seeker_idle_right_2.png',
+        '/assets/characters/player/spr_seeker_idle_right_3.png',
+        '/assets/characters/player/spr_seeker_idle_right_4.png',
+      ],
+      // Walk animations - sử dụng idle frames với tốc độ nhanh hơn
+      // (Có thể thay bằng walk frames riêng nếu có sau này)
+      walkDownFrames: [
+        '/assets/characters/player/spr_seeker_idle_down_1.png',
+        '/assets/characters/player/spr_seeker_idle_down_2.png',
+        '/assets/characters/player/spr_seeker_idle_down_3.png',
+        '/assets/characters/player/spr_seeker_idle_down_4.png',
+      ],
+      walkUpFrames: [
+        '/assets/characters/player/spr_seeker_idle_up_1.png',
+        '/assets/characters/player/spr_seeker_idle_up_2.png',
+        '/assets/characters/player/spr_seeker_idle_up_3.png',
+        '/assets/characters/player/spr_seeker_idle_up_4.png',
+      ],
+      walkLeftFrames: [
+        '/assets/characters/player/spr_seeker_idle_left_1.png',
+        '/assets/characters/player/spr_seeker_idle_left_2.png',
+        '/assets/characters/player/spr_seeker_idle_left_3.png',
+        '/assets/characters/player/spr_seeker_idle_left_4.png',
+      ],
+      walkRightFrames: [
+        '/assets/characters/player/spr_seeker_idle_right_1.png',
+        '/assets/characters/player/spr_seeker_idle_right_2.png',
+        '/assets/characters/player/spr_seeker_idle_right_3.png',
+        '/assets/characters/player/spr_seeker_idle_right_4.png',
+      ],
     },
     npcs: {
       merchantWhispers: '/assets/characters/npcs/spr_merchant_whispers_sheet.png',
@@ -225,6 +280,29 @@ export const ASSET_PATHS = {
     },
   },
   tilesets: {
+    // Floor tiles - Fallback to existing wood bricks (new assets folder not created yet)
+    floor: '/assets/tilesets/tile_wood_brick_01.png',
+    floorVariants: [
+      '/assets/tilesets/tile_wood_brick_01.png',
+      '/assets/tilesets/tile_wood_brick_02.png',
+      '/assets/tilesets/tile_wood_brick_03.png',
+      '/assets/tilesets/tile_wood_brick_04.png',
+      '/assets/tilesets/tile_wood_brick_05.png',
+      '/assets/tilesets/tile_wood_brick_06.png',
+      '/assets/tilesets/tile_wood_brick_07.png',
+      '/assets/tilesets/tile_wood_brick_08.png',
+      '/assets/tilesets/tile_wood_brick_09.png',
+      '/assets/tilesets/tile_wood_brick_10.png',
+    ],
+    // Wall tiles - Using wood brick as wall for now
+    wall: '/assets/tilesets/tile_wood_brick_01.png',
+    wallVariants: [
+      '/assets/tilesets/tile_wood_brick_01.png',
+      '/assets/tilesets/tile_wood_brick_02.png',
+      '/assets/tilesets/tile_wood_brick_03.png',
+      '/assets/tilesets/tile_wood_brick_04.png',
+      '/assets/tilesets/tile_wood_brick_05.png',
+    ],
     dungeon: {
       floor: {
         cracked: '/assets/tilesets/dungeon/floor/tile_floor_00.png',
@@ -238,6 +316,13 @@ export const ASSET_PATHS = {
       },
     },
     props: {
+      mirror: '/assets/tilesets/props/prop_mirror_01.png',
+      mirrorVariants: [
+        '/assets/tilesets/props/prop_mirror_01.png',
+        '/assets/tilesets/props/prop_mirror_02.png',
+        '/assets/tilesets/props/prop_mirror_03.png',
+      ],
+      // Mirror variants - using existing prop_mirror_01-03 as broken mirrors
       mirrorIntact: '/assets/tilesets/props/prop_mirror_intact.png',
       mirrorCracked: '/assets/tilesets/props/prop_mirror_cracked.png',
       mirrorShattered: '/assets/tilesets/props/prop_mirror_shattered.png',
@@ -249,13 +334,48 @@ export const ASSET_PATHS = {
       prisonGateOpen: '/assets/tilesets/props/prop_prison_gate_open.png',
       skeleton: '/assets/tilesets/props/prop_skeleton.png',
       lanternPost: '/assets/tilesets/props/prop_lantern_post.png',
+      chest: '/assets/tilesets/props/prop_chest_closed.png',
       chestClosed: '/assets/tilesets/props/prop_chest_closed.png',
       chestOpen: '/assets/tilesets/props/prop_chest_open.png',
+      // Mirror Hallway specific props (using existing mirrors as broken)
+      mirrorBroken: '/assets/tilesets/props/prop_mirror_01.png', // Use existing mirror as broken mirror
     },
   },
   fx: {
-    glitchStatic: '/assets/fx/fx_glitch_static_sheet.png',
-    lightGlowAmber: '/assets/fx/fx_light_glow_amber_sheet.png',
-    fogWar: '/assets/fx/fx_fog_war_sheet.png',
+    // FX effects - individual frames (after processing)
+    glitchStatic: '/assets/fx/fx_glitch_static_01.png',
+    glitchStaticFrames: [
+      '/assets/fx/fx_glitch_static_01.png',
+      '/assets/fx/fx_glitch_static_02.png',
+      '/assets/fx/fx_glitch_static_03.png',
+      '/assets/fx/fx_glitch_static_04.png',
+      '/assets/fx/fx_glitch_static_05.png',
+      '/assets/fx/fx_glitch_static_06.png',
+      '/assets/fx/fx_glitch_static_07.png',
+      '/assets/fx/fx_glitch_static_08.png',
+      '/assets/fx/fx_glitch_static_09.png',
+      '/assets/fx/fx_glitch_static_10.png',
+    ],
+    lightGlowAmber: '/assets/fx/fx_light_glow_amber_01.png',
+    lightGlowAmberFrames: [
+      '/assets/fx/fx_light_glow_amber_01.png',
+      '/assets/fx/fx_light_glow_amber_02.png',
+      '/assets/fx/fx_light_glow_amber_03.png',
+      '/assets/fx/fx_light_glow_amber_04.png',
+      '/assets/fx/fx_light_glow_amber_05.png',
+      '/assets/fx/fx_light_glow_amber_06.png',
+      '/assets/fx/fx_light_glow_amber_07.png',
+      '/assets/fx/fx_light_glow_amber_08.png',
+      '/assets/fx/fx_light_glow_amber_09.png',
+    ],
+    fogWar: '/assets/fx/fx_fog_war_01.png',
+    fogWarFrames: [
+      '/assets/fx/fx_fog_war_01.png',
+      '/assets/fx/fx_fog_war_02.png',
+      '/assets/fx/fx_fog_war_03.png',
+      '/assets/fx/fx_fog_war_04.png',
+      '/assets/fx/fx_fog_war_05.png',
+    ],
+    fogPattern: '/assets/fx/fx_fog_pattern.png', // Hình 1: Camouflage pattern
   },
 } as const;

@@ -11,11 +11,14 @@ interface LogEntry {
 
 interface ActionLogProps {
   maxEntries?: number;
+  playerPosition?: { x: number; y: number };
 }
 
-export default function ActionLog({ maxEntries = 5 }: ActionLogProps) {
+export default function ActionLog({ maxEntries = 5, playerPosition }: ActionLogProps) {
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [positionHistory, setPositionHistory] = useState<Array<{ x: number; y: number }>>([]);
   const logEndRef = useRef<HTMLDivElement>(null);
+  const logCounterRef = useRef<number>(0); // Counter để đảm bảo key unique
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -26,9 +29,11 @@ export default function ActionLog({ maxEntries = 5 }: ActionLogProps) {
   useEffect(() => {
     // Tạo custom event để thêm log
     const handleAddLog = (event: CustomEvent<Omit<LogEntry, "id" | "timestamp">>) => {
+      logCounterRef.current += 1; // Tăng counter mỗi lần có log mới
+      const timestamp = Date.now();
       const newLog: LogEntry = {
-        id: Date.now().toString(),
-        timestamp: Date.now(),
+        id: `${timestamp}-${logCounterRef.current}`, // Kết hợp timestamp và counter để đảm bảo unique
+        timestamp: timestamp,
         ...event.detail,
       };
       setLogs((prev) => {
@@ -42,6 +47,17 @@ export default function ActionLog({ maxEntries = 5 }: ActionLogProps) {
       window.removeEventListener("addGameLog" as any, handleAddLog as EventListener);
     };
   }, [maxEntries]);
+
+  // Track position changes
+  useEffect(() => {
+    if (playerPosition) {
+      setPositionHistory((prev) => {
+        const newHistory = [...prev, playerPosition];
+        // Keep last 5 positions
+        return newHistory.slice(-5);
+      });
+    }
+  }, [playerPosition]);
 
   // Initial log
   useEffect(() => {
@@ -68,18 +84,45 @@ export default function ActionLog({ maxEntries = 5 }: ActionLogProps) {
   };
 
   return (
-    <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 pointer-events-auto z-30 w-full max-w-2xl px-4">
-      <div className="flex flex-col-reverse gap-1">
-        {logs.map((log, i) => (
-          <div
-            key={log.id}
-            className={`text-sm font-pixel bg-black/60 px-4 py-1 rounded-full text-zinc-200 animate-fade-in shadow-lg border border-amber-600/30`}
-            style={{ opacity: 1 - i * 0.3 }} // Dòng cũ sẽ mờ dần
-            dangerouslySetInnerHTML={{ __html: `&gt; ${log.message}` }}
-          />
-        ))}
-        <div ref={logEndRef} />
+    <div className="bg-black/85 border-2 border-zinc-600 p-3 shadow-2xl font-pixel min-w-[260px] max-w-[300px] backdrop-blur-sm">
+      {/* Header */}
+      <div className="border-b-2 border-zinc-700 pb-2 mb-2">
+        <h3 className="text-amber-400 text-xs font-pixel uppercase">Nhật ký</h3>
       </div>
+
+      {/* Game Events Log */}
+      <div className="mb-3">
+        <div className="text-[10px] text-zinc-500 font-pixel mb-1">Sự kiện:</div>
+        <div className="bg-black/60 border border-zinc-700 p-2 h-20 overflow-y-auto space-y-1">
+          {logs.map((log, i) => (
+            <div
+              key={log.id}
+              className={`text-[10px] ${getLogColor(log.type)} font-pixel leading-tight`}
+              style={{ opacity: 1 - i * 0.2 }}
+              dangerouslySetInnerHTML={{ __html: `&gt; ${log.message}` }}
+            />
+          ))}
+          <div ref={logEndRef} />
+        </div>
+      </div>
+
+      {/* Position History */}
+      {positionHistory.length > 0 && (
+        <div>
+          <div className="text-[10px] text-zinc-500 font-pixel mb-1">Vị trí:</div>
+          <div className="bg-black/60 border border-zinc-700 p-2 space-y-0.5">
+            {positionHistory.slice().reverse().map((pos, i) => (
+              <div
+                key={i}
+                className="text-[10px] text-zinc-300 font-mono"
+                style={{ opacity: 1 - i * 0.15 }}
+              >
+                &gt; Vị trí: ({pos.x}, {pos.y})
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -12,6 +12,8 @@ const PixelNavbarBackground = dynamic(
 );
 
 export default function PublicNavbar() {
+  // Logo luôn hiển thị, không cần check load state
+  // Fallback sẽ tự động hiển thị nếu ảnh không load được
   return (
     <header className="relative w-full z-30 m-2 ml-6 ">
       <PixelNavbarBackground />
@@ -23,11 +25,27 @@ export default function PublicNavbar() {
               <div className="flex h-20 items-center justify-between">
                 {/* Logo */}
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 flex items-center justify-center bg-[#26293A] border-2 border-[#7A84A2] pixel-border rounded-full">
-                    <div className="w-12 h-12 pixel-text text-[#D4A94E] text-[25px] select-none">
-                      A
+                  <Link href="/" className="flex items-center">
+                    <div className="w-16 h-16 flex items-center justify-center bg-[#26293A] border-2 border-[#7A84A2] pixel-border rounded-full overflow-hidden relative">
+                      <img
+                        src="/assets/ui/logo_asteros.png"
+                        alt="ASTEROS Logo"
+                        className="w-full h-full object-cover pixel-text"
+                        style={{
+                          objectPosition: 'center',
+                        }}
+                        onError={(e) => {
+                          // Fallback: ẩn img và hiển thị text "A"
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      <div className="logo-fallback absolute inset-0 w-full h-full pixel-text text-[#D4A94E] text-[25px] select-none items-center justify-center hidden">
+                        A
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                   <Link
                     href="/"
                     className="relative inline-block text-[55px] font-bold font-pixel tracking-wider text-transparent hover:text-[#C7B4FF] transition-all"

@@ -98,8 +98,8 @@ export default function LightSlider({
   }, [mode]);
 
   return (
-    <div className="absolute bottom-32 left-1/2 -translate-x-1/2 pointer-events-auto z-30">
-      <div className="bg-black/80 border-2 border-amber-600 p-4 rounded-lg shadow-lg backdrop-blur-sm min-w-[300px]">
+    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-auto z-30">
+      <div className="bg-black/85 border-2 border-amber-600 p-3 rounded shadow-lg backdrop-blur-sm min-w-[300px] max-w-[400px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">

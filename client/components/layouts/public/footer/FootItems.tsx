@@ -13,7 +13,7 @@ export const FootItemsExtended: {
   {
     title: "Logo & Social",
     items: [
-      { type: "logo", href: "/", src: "/logo.png" },
+      { type: "logo", href: "/", src: "/assets/ui/logo_asteros.png" },
       { type: "icon", href: "https://facebook.com", icon: FaFacebookF },
       { type: "icon", href: "https://instagram.com", icon: FaInstagram },
       { type: "icon", href: "https://youtube.com", icon: FaYoutube },

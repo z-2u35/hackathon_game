@@ -148,3 +148,4 @@ export default function GameBackground({ className = "", intensity = "medium" }:
   );
 }
 
+

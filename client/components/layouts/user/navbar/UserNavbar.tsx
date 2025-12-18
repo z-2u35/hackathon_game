@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { navItems } from "./NavItems";
@@ -19,6 +20,7 @@ export default function UserNavbar() {
   const { mutate: disconnect } = useDisconnectWallet();
   const router = useRouter();
   const { displayBalance, isLoading: isLoadingBalance } = useWalletBalance();
+  // Logo luôn hiển thị, không cần check load state
 
   if (!account) return null; // fallback nếu chưa đăng nhập
 
@@ -28,7 +30,7 @@ export default function UserNavbar() {
   };
 
   return (
-    <header className="relative w-full z-30 ml-5">
+    <header className="relative w-full z-50 ml-5">
       <PixelNavbarBackground />
 
       <Disclosure as="nav" className="relative z-10 bg-transparent">
@@ -38,11 +40,27 @@ export default function UserNavbar() {
               <div className="flex h-20 items-center justify-between">
                 {/* Logo */}
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 flex items-center justify-center bg-[#26293A] border-2 border-[#7A84A2] pixel-border rounded-full">
-                    <div className="w-12 h-12 pixel-text text-[#D4A94E] text-[25px] select-none">
-                      A
+                  <Link href="/" className="flex items-center">
+                    <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-[#26293A] border-2 border-[#7A84A2] pixel-border rounded-full overflow-hidden relative">
+                      <img
+                        src="/assets/ui/logo_asteros.png"
+                        alt="ASTEROS Logo"
+                        className="w-full h-full object-cover pixel-text"
+                        style={{
+                          objectPosition: 'center',
+                        }}
+                        onError={(e) => {
+                          // Fallback: ẩn img và hiển thị text "A"
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      <div className="logo-fallback absolute inset-0 w-full h-full pixel-text text-[#D4A94E] text-[28px] md:text-[32px] select-none items-center justify-center hidden">
+                        A
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                   <div
                     className="pixel-text text-[#F0F2FA] text-[35px] font-bold tracking-wider transition-all"
                   >

@@ -1,7 +1,7 @@
 // app/play/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePlayerStats } from "@/hook/usePlayerStats";
 import GameHUD from "@/components/game/GameHUD";
@@ -9,6 +9,7 @@ import GameActions from "@/components/game/GameActions";
 import GameBackground from "@/components/game/GameBackground";
 import MirrorHallwayGame from "@/components/game/rooms/MirrorHallwayGame";
 import GameInterface from "@/components/game/GameInterface";
+import LoreIntro from "@/components/game/LoreIntro";
 import { addGameLog } from "@/components/game/ActionLog";
 
 export default function PlayPage() {
@@ -17,6 +18,7 @@ export default function PlayPage() {
   const [lanternId, setLanternId] = useState<string | null>(
     lanternObjects.length > 0 ? lanternObjects[0].data.objectId : null
   );
+  const [showLoreIntro, setShowLoreIntro] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [gameResults, setGameResults] = useState<{
     hp?: number;
@@ -29,6 +31,23 @@ export default function PlayPage() {
   if (hasLantern && lanternObjects.length > 0 && !lanternId) {
     setLanternId(lanternObjects[0].data.objectId);
   }
+
+  // Chặn scroll khi vào game - chỉ dùng CSS và preventDefault, không cố định body
+  useEffect(() => {
+    if (showGame) {
+      // Chỉ thêm class để CSS xử lý
+      document.body.classList.add('game-page-active');
+      document.documentElement.classList.add('game-page-active');
+    } else {
+      document.body.classList.remove('game-page-active');
+      document.documentElement.classList.remove('game-page-active');
+    }
+    
+    return () => {
+      document.body.classList.remove('game-page-active');
+      document.documentElement.classList.remove('game-page-active');
+    };
+  }, [showGame]);
 
   const handleGameChoice = (
     choiceId: number,
@@ -45,7 +64,27 @@ export default function PlayPage() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white relative overflow-hidden h-screen">
+    <>
+      {/* Lore Intro - Hiển thị trước khi vào game */}
+      {showLoreIntro && (
+        <LoreIntro
+          onComplete={() => {
+            setShowLoreIntro(false);
+            setShowGame(true);
+          }}
+          skipable={true}
+        />
+      )}
+
+      <main 
+        className={`min-h-screen bg-zinc-950 text-white relative overflow-hidden ${showGame ? 'h-screen' : 'min-h-screen'} overscroll-none`}
+        style={{ 
+          overscrollBehavior: 'none', 
+          overflow: 'hidden',
+          height: showGame ? '100vh' : 'auto',
+          maxHeight: showGame ? '100vh' : 'none'
+        }}
+      >
       {/* PixiJS Background */}
       <GameBackground intensity="medium" />
 
@@ -72,14 +111,13 @@ export default function PlayPage() {
                 {/* Nút để vào game */}
                 <div className="mt-8 w-full max-w-md">
                   <button
-                    onClick={() => setShowGame(true)}
+                    onClick={() => setShowLoreIntro(true)}
                     className="block cursor-pointer w-full text-center px-6 py-4 bg-purple-700 hover:bg-purple-600 text-white rounded-lg border-2 border-purple-900 transition-all shadow-lg font-pixel text-lg"
                   >
                     🎮 VÀO GAME STORY MODE
                   </button>
                   <p className="text-center text-zinc-500 text-sm mt-2 font-pixel">
-                    Chơi màn chơi &quot;Hành lang Gương&quot; với đồ họa PixiJS
-                    isometric
+                    Bắt đầu hành trình vào Asteros - Bạn là bản thể thứ 10,492
                   </p>
                 </div>
               </div>
@@ -116,7 +154,7 @@ export default function PlayPage() {
                 </GameInterface>
 
                 {/* Nút quay lại - Overlay */}
-                <div className="absolute top-4 right-4 z-40 flex gap-2 pointer-events-auto">
+                <div className="absolute top-20 right-4 z-40 flex gap-2 pointer-events-auto">
                   <button
                     onClick={() => setShowGame(false)}
                     className="px-4 cursor-pointer py-2 bg-zinc-700/90 hover:bg-zinc-600 text-white rounded-lg border-2 border-zinc-600 transition-all font-pixel backdrop-blur-sm"
@@ -142,5 +180,6 @@ export default function PlayPage() {
         )}
       </div>
     </main>
+    </>
   );
 }

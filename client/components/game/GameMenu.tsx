@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { ConnectButton } from "@mysten/dapp-kit";
 import { usePlayerStats } from "@/hook/usePlayerStats";
+import GameLogo from "./GameLogo";
 import * as PIXI from "pixi.js";
 
 interface GameMenuProps {
@@ -16,7 +17,9 @@ export default function GameMenu({ onStartGame }: GameMenuProps) {
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
-  const particlesRef = useRef<PIXI.Graphics[]>([]);
+  // Type cho particle với velocity properties
+  type Particle = PIXI.Graphics & { vx: number; vy: number };
+  const particlesRef = useRef<Particle[]>([]);
 
   // Hiệu ứng particles (sương mù/hạt bay lên)
   useEffect(() => {
@@ -40,7 +43,7 @@ export default function GameMenu({ onStartGame }: GameMenuProps) {
 
     // Tạo nhiều particles hơn cho hiệu ứng đẹp
     for (let i = 0; i < 50; i++) {
-      const particle = new PIXI.Graphics();
+      const particle = new PIXI.Graphics() as Particle;
       const size = Math.random() * 4 + 1;
       const alpha = Math.random() * 0.4 + 0.1;
       
@@ -115,44 +118,14 @@ export default function GameMenu({ onStartGame }: GameMenuProps) {
           }}
         />
 
-        {/* Title - ASTEROS với hiệu ứng Glitch và Glow */}
-        <div className="mb-12 relative">
-          <h1
-            className="font-pixel text-7xl md:text-9xl text-amber-400 relative z-10"
-            style={{
-              textShadow: `
-                0 0 10px rgba(251, 191, 36, 0.9),
-                0 0 20px rgba(251, 191, 36, 0.7),
-                0 0 30px rgba(251, 191, 36, 0.5),
-                0 0 40px rgba(251, 191, 36, 0.3),
-                2px 2px 0px rgba(0, 0, 0, 0.9),
-                -2px -2px 0px rgba(0, 0, 0, 0.9)
-              `,
-              filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.8))',
-              animation: 'glow-pulse 2s ease-in-out infinite',
-            }}
-          >
-            ASTEROS
-          </h1>
-          {/* Glitch effect overlay - Multiple layers for better effect */}
-          <div
-            className="absolute inset-0 font-pixel text-7xl md:text-9xl text-purple-500 opacity-20 pointer-events-none"
-            style={{
-              animation: "glitch 0.3s infinite",
-              clipPath: "inset(0 0 0 0)",
-            }}
-          >
-            ASTEROS
-          </div>
-          <div
-            className="absolute inset-0 font-pixel text-7xl md:text-9xl text-cyan-500 opacity-15 pointer-events-none"
-            style={{
-              animation: "glitch 0.5s infinite reverse",
-              clipPath: "inset(0 0 0 0)",
-            }}
-          >
-            ASTEROS
-          </div>
+        {/* Logo ASTEROS */}
+        <div className="mb-12 relative flex flex-col items-center">
+          <GameLogo 
+            size="xlarge" 
+            showGlow={true} 
+            animated={true}
+            className="mb-4"
+          />
         </div>
 
         {/* Menu Box */}

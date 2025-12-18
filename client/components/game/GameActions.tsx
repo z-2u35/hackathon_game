@@ -26,7 +26,12 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess, onAddL
   const handleMove = () => {
     if (!hasGas) {
       const network = process.env.NEXT_PUBLIC_SUI_NETWORK || "testnet";
-      alert(`Bạn không có SUI gas trên ${network}. Hãy faucet SUI (đúng network) rồi thử lại.`);
+      const message = `Bạn không có SUI gas trên ${network}. Hãy faucet SUI (đúng network) rồi thử lại.`;
+      if (onAddLog) {
+        onAddLog(`<span class="text-red-400">⚠️ ${message}</span>`);
+      } else {
+        alert(message);
+      }
       return;
     }
 
@@ -37,17 +42,20 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess, onAddL
           : (oil ?? 0) <= 0
             ? "Lantern đã cạn Oil. Hãy Reset Oil (mint mới) để chơi lại."
             : "Không thể di chuyển.";
-      alert(reason);
+      if (onAddLog) {
+        onAddLog(`<span class="text-red-400">⚠️ ${reason}</span>`);
+      } else {
+        alert(reason);
+      }
       return;
     }
 
     // TODO: Function move_room chưa được implement trong smart contract
-    // Tạm thời chỉ hiển thị thông báo, không gọi blockchain
+    // Tạm thời chỉ hiển thị log, không gọi blockchain
     if (onAddLog) {
-      onAddLog('<span class="text-yellow-400">👣 Tính năng di chuyển đang được phát triển...</span>');
-    } else {
-      alert("👣 Tính năng di chuyển đang được phát triển. Vui lòng chơi game story mode tại /game");
+      onAddLog('<span class="text-yellow-400">👣 Tính năng di chuyển đang được phát triển. Vui lòng chơi game story mode tại /play để trải nghiệm gameplay đầy đủ.</span>');
     }
+    // Không hiển thị alert popup nữa, chỉ dùng log
     
     // Code cũ - sẽ được enable khi smart contract có function move_room
     /*
@@ -83,9 +91,8 @@ export default function GameActions({ lanternId, oil, isAlive, onSuccess, onAddL
       onSuccess: () => {
         if (onAddLog) {
           onAddLog('<span class="text-green-400">🔄 Đã reset Oil (mint Lantern mới).</span>');
-        } else {
-          alert("🔄 Đã reset Oil (mint Lantern mới). ");
         }
+        // Không dùng alert nữa, chỉ dùng log để tránh popup làm gián đoạn trải nghiệm
         onSuccess();
       },
     });
