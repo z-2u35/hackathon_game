@@ -6,7 +6,7 @@ import InventoryModal, { GameItem } from "./InventoryModal";
 import ActionConsole from "./ActionConsole";
 import LightSlider from "./LightSlider";
 import ActionLog from "./ActionLog";
-import IsometricLevel from "./IsometricLevel";
+import TopDownLevel from "./TopDownLevel";
 import DialogueBox from "./DialogueBox";
 import { addGameLog } from "./ActionLog";
 import { usePlayerStats } from "@/hook/usePlayerStats";
@@ -193,21 +193,19 @@ export default function GameInterface({
   return (
     <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden" style={{ touchAction: 'none' }}>
       {/* ============================================ */}
-      {/* LAYER 0: Isometric Game Canvas (Dưới cùng) */}
+      {/* LAYER 0: Top-Down Game Canvas (Dưới cùng) */}
       {/* ============================================ */}
-      {children ? (
-        <div className="absolute inset-0 z-0 pointer-events-auto">
-          {children}
-        </div>
-      ) : (
-        <div className="absolute inset-0 z-0 pointer-events-auto">
-          <IsometricLevel
+      <div className="absolute inset-0 z-0 pointer-events-auto">
+        {children ? (
+          children
+        ) : (
+          <TopDownLevel
             lightLevel={lightLevel}
             onInteract={handleInteract}
             onPlayerMove={handlePlayerMove}
           />
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ============================================ */}
       {/* LAYER 1: HUD Overlay (Các cạnh màn hình) */}
