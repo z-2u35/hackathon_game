@@ -4,13 +4,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePlayerStats } from "@/hook/usePlayerStats";
-import GameHUD from "@/components/game/GameHUD";
 import GameActions from "@/components/game/GameActions";
 import GameBackground from "@/components/game/GameBackground";
-import MirrorHallwayGame from "@/components/game/rooms/MirrorHallwayGame";
 import GameInterface from "@/components/game/GameInterface";
 import LoreIntro from "@/components/game/LoreIntro";
-import { addGameLog } from "@/components/game/ActionLog";
 
 export default function PlayPage() {
   const { hasLantern, lanternObjects, oil, isAlive, refetch, hp, sanity } =
@@ -20,7 +17,7 @@ export default function PlayPage() {
   );
   const [showLoreIntro, setShowLoreIntro] = useState(false);
   const [showGame, setShowGame] = useState(false);
-  const [gameResults, setGameResults] = useState<{
+  const [gameResults] = useState<{
     hp?: number;
     oil?: number;
     sanity?: number;
@@ -49,19 +46,6 @@ export default function PlayPage() {
     };
   }, [showGame]);
 
-  const handleGameChoice = (
-    choiceId: number,
-    result: {
-      hp?: number;
-      oil?: number;
-      sanity?: number;
-      item?: string;
-      code?: string;
-    }
-  ) => {
-    setGameResults(result);
-    console.log("Game choice:", choiceId, result);
-  };
 
   return (
     <>
@@ -77,7 +61,7 @@ export default function PlayPage() {
       )}
 
       <main 
-        className={`min-h-screen bg-zinc-950 text-white relative overflow-hidden ${showGame ? 'h-screen' : 'min-h-screen'} overscroll-none`}
+        className={`min-h-screen mt-50 bg-zinc-950 text-white relative overflow-hidden ${showGame ? 'h-screen' : 'min-h-screen'} overscroll-none`}
         style={{ 
           overscrollBehavior: 'none', 
           overflow: 'hidden',
@@ -89,7 +73,7 @@ export default function PlayPage() {
       <GameBackground intensity="medium" />
 
       {/* Content Container */}
-      <div className="relative z-10 container mx-auto px-4 py-6 h-full flex flex-col overflow-hidden">
+      <div className="relative z-10 mt-20 container mx-auto px-4 py-6 h-full flex flex-col overflow-hidden">
         {hasLantern && lanternId ? (
           <>
             {!showGame ? (
@@ -98,7 +82,7 @@ export default function PlayPage() {
                 <h1 className="text-3xl font-pixel text-amber-300 mb-4 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">
                   Chơi
                 </h1>
-                <GameHUD />
+             
                 <div className="mt-6 w-full max-w-md">
                   <GameActions
                     lanternId={lanternId}

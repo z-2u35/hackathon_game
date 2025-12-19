@@ -1,6 +1,5 @@
 "use client";
 
-import { addGameLog } from "./ActionLog";
 
 interface ActionConsoleProps {
   onMove?: () => void;
@@ -33,7 +32,7 @@ export default function ActionConsole({
 
   return (
     <div className="absolute bottom-4 right-4 pointer-events-auto z-30">
-      <div className="bg-black/85 border-2 border-zinc-600 p-3 shadow-2xl font-pixel min-w-[260px] max-w-[300px] backdrop-blur-sm">
+      <div className="bg-black/85 border-2 border-zinc-600 p-3 shadow-2xl font-pixel min-w-65 max-w-75 backdrop-blur-sm">
         {/* Header */}
         <div className="border-b-2 border-zinc-700 pb-2 mb-3">
           <h3 className="text-amber-400 text-sm font-pixel uppercase">Bảng Điều Khiển</h3>

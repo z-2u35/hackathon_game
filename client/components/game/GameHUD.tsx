@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -48,13 +49,13 @@ export default function GameHUD({
   if (!playerStats.hasLantern && !propLanternId) return null;
 
   return (
-    <div className="absolute top-20 left-4 p-2.5 bg-black/90 border-2 border-zinc-600 rounded-sm w-[240px] pointer-events-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] z-40 backdrop-blur-sm">
+    <div className=" top-20 left-4 p-2.5 bg-black/90 border-2 border-zinc-600 rounded-sm w-60 pointer-events-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] z-40 backdrop-blur-sm">
       {/* Avatar & Info */}
       <div className="flex gap-2 mb-2.5 border-b border-zinc-700 pb-2">
         {/* Avatar Frame - Pixel Art Style */}
-        <div className="w-11 h-11 bg-zinc-800 border-2 border-zinc-500 flex items-center justify-center text-lg shadow-inner relative overflow-hidden flex-shrink-0">
+        <div className="w-11 h-11 bg-zinc-800 border-2 border-zinc-500 flex items-center justify-center text-lg shadow-inner relative overflow-hidden shrink-0">
           {/* Pixel art avatar placeholder - có thể thay bằng image sau */}
-          <div className="w-full h-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 flex items-center justify-center">
+          <div className="w-full h-full bg-linear-to-br from-amber-600 via-amber-700 to-amber-800 flex items-center justify-center">
             <span className="text-lg">🧙‍♂️</span>
           </div>
           {/* Ancient frame effect */}
@@ -80,12 +81,12 @@ export default function GameHUD({
           </span>
           <span className="text-[9px]">{health}/100</span>
         </div>
-        <div className="h-2.5 w-full bg-zinc-900 border border-zinc-600 relative p-[1px]">
+        <div className="h-2.5 w-full bg-zinc-900 border border-zinc-600 relative p-px">
           <div
             className="h-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.6)] transition-all duration-500"
             style={{ width: `${Math.max(0, Math.min(100, (health / 100) * 100))}%` }}
           />
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-white/20 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-full h-0.5 bg-white/20 pointer-events-none" />
         </div>
       </div>
 
@@ -106,11 +107,11 @@ export default function GameHUD({
         >
           {/* Liquid fill với gradient */}
           <div
-            className="h-full bg-gradient-to-r from-yellow-600 via-amber-500 to-amber-400 transition-all duration-500 relative"
+            className="h-full bg-linear-to-r from-yellow-600 via-amber-500 to-amber-400 transition-all duration-500 relative"
             style={{ width: `${Math.max(0, Math.min(100, oilPercentage))}%` }}
           >
             {/* Water/liquid effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-b from-transparent via-white/20 to-transparent" />
             {/* Ripple effect */}
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 animate-pulse" />
           </div>
@@ -137,7 +138,7 @@ export default function GameHUD({
         </div>
         <div className="h-2.5 w-full bg-zinc-900 border border-purple-700 relative overflow-hidden">
           <div
-            className={`h-full bg-gradient-to-r from-purple-600 to-purple-400 transition-all duration-500 ${
+            className={`h-full bg-linear-to-r from-purple-600 to-purple-400 transition-all duration-500 ${
               isSanityLow ? "animate-pulse" : ""
             }`}
             style={{ width: `${Math.max(0, Math.min(100, sanityPercentage))}%` }}
@@ -145,7 +146,7 @@ export default function GameHUD({
             {/* Glitch effect khi thấp */}
             {isSanityLow && (
               <>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-pulse" />
                 {glitchEffect && (
                   <div className="absolute inset-0 bg-red-500/20 animate-pulse" />
                 )}

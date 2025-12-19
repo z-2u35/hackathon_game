@@ -6,7 +6,7 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetwork
     url: getFullnodeUrl("devnet"),
     variables: {
       // Package ID devnet (sau khi bạn deploy devnet)
-      packageId: "0xf8acab2c0df09fc2105afe26cb90b9fafede7f6f19a96f74173697df64593784",
+      packageId: "0xbe8205e3b7a68a1f8527322a62f540600839b0d6435f5508e80c4255d517ae7b",
     },
   },
 

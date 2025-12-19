@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -31,7 +33,6 @@ export default function GameInterface({
   stats,
   inventory = [],
   lanternId: propLanternId,
-  onRefresh,
   children,
 }: GameInterfaceProps) {
   const [isInvOpen, setInvOpen] = useState(false);
@@ -148,7 +149,7 @@ export default function GameInterface({
     if (Math.abs(baseSanity - (localSanity ?? baseSanity)) > 10) {
       setLocalSanity(baseSanity);
     }
-  }, [baseOil, baseSanity]);
+  }, [baseOil, baseSanity, localOil, localSanity]);
 
   // Dynamic inventory - start with empty, add items as player collects them
   const [collectedItems, setCollectedItems] = useState<GameItem[]>([]);
@@ -349,16 +350,6 @@ export default function GameInterface({
     }
   };
 
-  // Handle dialogue choice - Disabled
-  // const handleDialogueChoice = (choiceId: number) => {
-  //   if (dialogue?.text.includes("chìa khóa")) {
-  //     if (choiceId === 1) {
-  //       addLog('<span class="text-green-400">🔑 Nhặt được: Old Key</span>', "success");
-  //       // TODO: Add item to inventory
-  //     }
-  //   }
-  //   setDialogue(null);
-  // };
 
   // Handle player movement
   const handlePlayerMove = (x: number, y: number) => {
@@ -366,18 +357,19 @@ export default function GameInterface({
     addLog(`<span class="text-zinc-300">Vị trí: (${x}, ${y})</span>`, "info");
   };
 
-  return (
-    <div 
-      className="absolute inset-0 z-[5] pointer-events-none overflow-hidden" 
-      style={{ 
-        touchAction: 'none',
-        overscrollBehavior: 'none'
+return (
+  <div className="relative w-full h-full overflow-hidden">
+    <div
+      className="absolute inset-0 z-5 pointer-events-none overflow-hidden"
+      style={{
+        touchAction: "none",
+        overscrollBehavior: "none",
       }}
     >
       {/* ============================================ */}
-      {/* LAYER 0: Top-Down Game Canvas (Dưới cùng) */}
+      {/* LAYER 0: Top-Down Game Canvas */}
       {/* ============================================ */}
-      <div className="absolute inset-0 z-0 pointer-events-auto">
+      <div className="absolute inset-0 z-0 pointer-events-auto mt-30">
         {children ? (
           children
         ) : (
@@ -390,10 +382,9 @@ export default function GameInterface({
       </div>
 
       {/* ============================================ */}
-      {/* LAYER 1: HUD Overlay (Các cạnh màn hình) */}
+      {/* LAYER 1: HUD Overlay */}
       {/* ============================================ */}
 
-      {/* HUD - Góc trái trên */}
       <GameHUD
         oil={currentOil}
         health={currentHealth}
@@ -401,7 +392,6 @@ export default function GameInterface({
         lanternId={lanternId}
       />
 
-      {/* Light Slider - Bottom center (above ActionConsole) */}
       <LightSlider
         lightLevel={lightLevel}
         onLightChange={setLightLevel}
@@ -409,12 +399,10 @@ export default function GameInterface({
         sanity={currentSanity}
       />
 
-      {/* Action Log - Bottom left (Position tracking & game events) */}
-      <div className="absolute bottom-4 left-4 pointer-events-auto z-30" style={{ maxWidth: 'calc(50% - 8px)' }}>
+      <div className="absolute bottom-4 left-4 pointer-events-auto z-30 max-w-[calc(50%-8px)]">
         <ActionLog playerPosition={playerPosition} />
       </div>
 
-      {/* Action Console - Góc dưới phải */}
       <ActionConsole
         onMove={handleMove}
         onRest={handleRest}
@@ -427,43 +415,36 @@ export default function GameInterface({
         sanity={currentSanity}
       />
 
-      {/* Dialogue Box - Disabled */}
-      {/* {dialogue && (
-        <DialogueBox
-          text={dialogue.text}
-          speaker={dialogue.speaker}
-          choices={dialogue.choices}
-          onClose={() => setDialogue(null)}
-          onChoice={handleDialogueChoice}
-        />
-      )} */}
-
       {/* ============================================ */}
-      {/* LAYER 2: Modals (Popup giữa màn hình) */}
+      {/* LAYER 2: Modals */}
       {/* ============================================ */}
 
-      {/* Inventory Modal */}
       {isInvOpen && (
-        <div className="pointer-events-auto z-50">
+        <div className="absolute inset-0 z-50 pointer-events-auto">
           <InventoryModal
             items={defaultInventory}
             onClose={() => setInvOpen(false)}
             onUse={(item) => {
-              addLog(`<span class="text-green-400">✨ Đã sử dụng: ${item.name}</span>`, "success");
+              addLog(
+                `<span class="text-green-400">✨ Đã sử dụng: ${item.name}</span>`,
+                "success"
+              );
               setInvOpen(false);
             }}
             onDrop={(item) => {
-              addLog(`<span class="text-red-400">🗑️ Đã vứt: ${item.name}</span>`, "warning");
+              addLog(
+                `<span class="text-red-400">🗑️ Đã vứt: ${item.name}</span>`,
+                "warning"
+              );
               setInvOpen(false);
             }}
           />
         </div>
       )}
 
-      {/* Inventory Button - Floating (không nằm trong ActionConsole) */}
       <button
         onClick={() => setInvOpen(true)}
-        className="absolute top-20 right-4 h-12 w-12 bg-zinc-800 border-2 border-zinc-500 rounded hover:bg-zinc-700 hover:border-amber-400 active:scale-95 transition-all flex items-center justify-center relative group pointer-events-auto z-40"
+        className="absolute top-20 right-4 z-40 pointer-events-auto h-12 w-12 bg-zinc-800 border-2 border-zinc-500 rounded hover:bg-zinc-700 hover:border-amber-400 active:scale-95 transition-all flex items-center justify-center group"
       >
         <span className="text-xl">🎒</span>
         {defaultInventory.length > 0 && (
@@ -473,17 +454,17 @@ export default function GameInterface({
         )}
       </button>
 
-      {/* Item Notification Popup */}
       <ItemNotificationPopup
         item={itemNotification}
         onClose={() => setItemNotification(null)}
       />
 
-      {/* Story Event Popup */}
       <StoryEventPopup
         event={storyEvent}
         onClose={() => setStoryEvent(null)}
       />
     </div>
-  );
+  </div>
+);
+
 }

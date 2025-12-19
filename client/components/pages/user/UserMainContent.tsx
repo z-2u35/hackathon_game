@@ -9,29 +9,29 @@ import NewsSection from "./UserNewsSection";
 import CommunitySection from "./UserCommunitySection";
 
 export default function UserMainContent() {
-  const hasLantern = true; // hoặc lấy từ hook usePlayerStats
+  const hasLantern = true;
 
   return (
-    <main className="flex-1 flex flex-col items-center mt-32 px-4 space-y-5">
-      {/* Hero Section */}
-      <section className="w-full max-w-5xl">
+    <main className="flex-1 flex flex-col items-center mt-32 px-4 space-y-8">
+      {/* Hero */}
+      <section className="w-full max-w-5xl flex justify-center">
         <UserHeroSection />
       </section>
 
-      {/* Progress + Tasks (2 cột trên desktop, 1 cột trên mobile) */}
-      <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* Progress + Tasks */}
+      <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 place-items-center">
         <ProgressOverview hasLantern={hasLantern} />
         <TasksSection />
       </section>
 
-      {/* Lore + Tips (2 cột) */}
-      <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-9">
+      {/* Lore + Tips */}
+      <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 place-items-center">
         <LoreSection />
         <TipsSection />
       </section>
 
-      {/* News + Community (2 cột) */}
-      <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* News + Community */}
+      <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 place-items-center">
         <NewsSection />
         <CommunitySection />
       </section>

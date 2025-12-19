@@ -81,6 +81,7 @@ export default function GameBackground({ className = "", intensity = "medium" }:
     }
 
     // Animation loop
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let frame = 0;
     app.ticker.add(() => {
       frame++;

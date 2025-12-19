@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -442,7 +443,7 @@ export default function TopDownLevel({
       cameraRef.current.x = -visualPositionRef.current.x + screenWidth / 2;
       cameraRef.current.y = -visualPositionRef.current.y + screenHeight / 2;
     });
-  }, []);
+  }, [updatePlayerDirection]);
 
   // Keyboard controls với preventDefault - CHẶN SCROLL TUYỆT ĐỐI
   useEffect(() => {
@@ -559,7 +560,6 @@ export default function TopDownLevel({
       const skeletonTexture = await PIXI.Assets.load(ASSET_PATHS.tilesets.props.skeleton).catch(() => null);
       
       // Load player sprite (first frame of idle down animation)
-      const playerTexture = await PIXI.Assets.load(ASSET_PATHS.characters.player.idleDown).catch(() => null);
       
       // Load player animation frames for all directions (idle và walk)
       const playerTextures = {
@@ -973,7 +973,7 @@ export default function TopDownLevel({
     };
 
     initApp().catch(console.error);
-  }, [gridToPixel, setupTicker]);
+  }, [gridToPixel, lightLevel, setupTicker]);
 
   // Update lighting khi lightLevel thay đổi
   useEffect(() => {
@@ -986,14 +986,14 @@ export default function TopDownLevel({
   return (
     <div 
       ref={containerRef} 
-      className="absolute inset-0 w-full h-full overflow-hidden"
+      className=" inset-0 w-full h-full overflow-hidden border-2 border-white "
       style={{ 
         width: '100%', 
         height: '100%',
         overflow: 'hidden',
         overscrollBehavior: 'none',
         touchAction: 'none',
-        position: 'absolute',
+        position: 'relative',
         top: 0,
         left: 0,
         right: 0,
